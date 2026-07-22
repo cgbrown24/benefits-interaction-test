@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Wellbeing</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 24px;
+      background: #ffffff;
+      color: #001820;
+      font-family: "Outfit";
+    }
+
+    .wellbeing-section {
+      width: min(96vw, 1280px);
+      margin: 0 auto;
+    }
+
+    .wellbeing-banner {
+      position: relative;
+      width: 100%;
+      height: 240px;
+      margin: 0 0 20px;
+      overflow: hidden;
+      border-radius: 14px;
+      background: #DADEE0;
+    }
+
+    .wellbeing-banner img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+    }
+
+    .wellbeing-banner-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 40, 72, 0.66);
+    }
+
+    .wellbeing-banner-text {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: flex-start;
+      max-width: 850px;
+      padding: 30px 36px;
+    }
+
+    .panel-eyebrow,
+    .detail-eyebrow {
+      margin-bottom: 10px;
+      color: #ffffff;
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: 1.2px;
+    }
+
+    .wellbeing-divider {
+      width: 56px;
+      height: 3px;
+      margin-bottom: 14px;
+      border-radius: 999px;
+      background: #14D0FA;
+    }
+
+    .wellbeing-banner h1 {
+      margin: 0;
+      color: #ffffff;
+      font-size: 30px;
+      font-weight: 600;
+      line-height: 1.2;
+    }
+
+    .wellbeing-intro {
+      max-width: 880px;
+      margin: 0 0 30px;
+      color: #68747C;
+      font-size: 16px;
+      line-height: 1.6;
+    }
+
+    .benefit-menu {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .benefit-option {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      min-height: 76px;
+      padding: 16px 18px;
+      border: 1px solid #DADEE0;
+      border-radius: 12px;
+      background: #ffffff;
+      color: #074975;
+      font-family: "Outfit";
+      font-size: 15px;
+      font-weight: 600;
+      text-align: left;
+      cursor: pointer;
+      transition:
+        border-color 180ms ease,
+        box-shadow 180ms ease,
+        transform 180ms ease;
+    }
+
+    .benefit-option:hover,
+    .benefit-option:focus-visible {
+      border-color: #007ACC;
+      box-shadow: 0 5px 14px rgba(0, 40, 72, 0.08);
+      transform: translateY(-1px);
+      outline: none;
+    }
+
+    .option-icon {
+      display: grid;
+      place-items: center;
+      width: 42px;
+      height: 42px;
+      flex: 0 0 42px;
+      border-radius: 50%;
+      background: #002848;
+      color: #14D0FA;
+    }
+
+    .option-icon svg {
+      width: 22px;
+      height: 22px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 1.8;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+.benefit-detail {
+      display: none;
+    }
+
+    .benefit-detail.visible {
+      display: block;
+    }
+
+    .back-button {
+      margin: 0 0 22px;
+      padding: 0;
+      border: 0;
+      background: transparent;
+      color: #007ACC;
+      font-family: "Outfit";
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .back-button:hover {
+      color: #074975;
+    }
+
+    .detail-card {
+      max-width: 760px;
+      padding: 30px;
+      border: 1px solid #DADEE0;
+      border-radius: 16px;
+      background: #ffffff;
+      box-shadow: 0 6px 18px rgba(0, 40, 72, 0.07);
+    }
+
+    .detail-eyebrow {
+      color: #007ACC;
+    }
+
+    .detail-card h2 {
+      margin: 0 0 12px;
+      color: #074975;
+      font-size: 28px;
+      font-weight: 600;
+      line-height: 1.25;
+    }
+
+    .detail-benefit-name {
+      margin: 0 0 12px;
+      color: #074975;
+      font-size: 18px;
+      font-weight: 600;
+    }
+
+    .detail-description {
+      margin: 0 0 22px;
+      color: #68747C;
+      font-size: 15px;
+      line-height: 1.6;
+    }
+
+    .eligibility {
+      margin: 0 0 18px;
+      padding-top: 18px;
+      border-top: 1px solid #DADEE0;
+      font-size: 13px;
+      line-height: 1.7;
+    }
+
+    .eligibility-label {
+      display: block;
+      margin-bottom: 3px;
+      color: #288410;
+      font-weight: 600;
+    }
+
+    .eligibility-values {
+      color: #001820;
+    }
+
+    .eligibility-divider {
+      margin: 0 5px;
+      color: #ACB4BC;
+    }
+
+    .learn-more {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 20px;
+      border-radius: 999px;
+      background: #007ACC;
+      color: #ffffff;
+      font-size: 13px;
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    .learn-more:hover {
+      background: #074975;
+    }
+
+    @media (max-width: 760px) {
+      body {
+        padding: 16px;
+      }
+
+      .wellbeing-banner {
+        height: 260px;
+      }
+
+      .wellbeing-banner-text {
+        padding: 24px;
+      }
+
+      .wellbeing-banner h1 {
+        font-size: 25px;
+      }
+
+      .benefit-menu {
+        grid-template-columns: 1fr;
+      }
+    }
+  
+    .option-icon > span {
+      font-size: 28px;
+      font-weight: 700;
+      line-height: 1;
+      display: block;
+    }
+
+  
+  .option-icon > span {
+    display: block !important;
+    font-family: Arial, Helvetica, sans-serif !important;
+    font-size: 30px !important;
+    font-weight: 400 !important;
+    line-height: 1 !important;
+    transform: translateY(-1px);
+  }
+
+</style>
+</head>
+
+<body>
+
+  <main class="wellbeing-section">
+
+    <div class="wellbeing-home" id="wellbeingHome">
+
+      <div class="wellbeing-banner">
+        <img
+          src="assets/my-wellbeing.png"
+          alt="Woman enjoying a quiet personal moment at an outdoor café">
+
+        <div class="wellbeing-banner-overlay"></div>
+
+        <div class="wellbeing-banner-text">
+          <div class="panel-eyebrow">MY WELLBEING</div>
+          <div class="wellbeing-divider" aria-hidden="true"></div>
+          <h1>Make Your Wellbeing a Priority</h1>
+        </div>
+      </div>
+
+      <p class="wellbeing-intro">
+        Explore resources designed to support your wellbeing and help you build
+        healthy habits for everyday life.
+      </p>
+
+      <div class="benefit-menu">
+
+        <button class="benefit-option" type="button" data-benefit="thrive">
+          <span class="option-icon"><span aria-hidden="true">›</span></span>
+          <span>Unitek Thrive Wellness</span>
+        </button>
+
+        <button class="benefit-option" type="button" data-benefit="calm">
+          <span class="option-icon"><span aria-hidden="true">›</span></span>
+          <span>Calm Health App</span>
+        </button>
+
+      </div>
+    </div>
+
+    <div class="benefit-detail" id="benefitDetail">
+      <button class="back-button" id="backButton" type="button">
+        ← Back to My Wellbeing
+      </button>
+
+      <div class="detail-card" id="detailCard"></div>
+    </div>
+
+  </main>
+
+  <script>
+    const wellbeingHome = document.getElementById("wellbeingHome");
+    const benefitDetail = document.getElementById("benefitDetail");
+    const detailCard = document.getElementById("detailCard");
+    const backButton = document.getElementById("backButton");
+
+    const benefitContent = {
+
+      "thrive": {
+        eyebrow: "BUILD HEALTHY HABITS",
+        story: "Take an Active Role in Your Wellbeing",
+        name: "Unitek Thrive Wellness",
+        description:
+          "A physical and mental wellbeing platform with challenges, resources, and activities designed to help you work toward your wellness goals.",
+        eligibility:
+          'Regular Full-Time<span class="eligibility-divider">|</span>Regular Part-Time<span class="eligibility-divider">|</span>Per Diem / Assignment<span class="eligibility-divider">|</span>Affordable Care Act Medical Eligible',
+        link:
+          "https://stacks.cdc.gov/view/cdc/107530/cdc_107530_DS1.pdf"
+      },
+
+      "calm": {
+        eyebrow: "SUPPORT YOUR MENTAL WELLBEING",
+        story: "Find Support That Meets You Where You Are",
+        name: "Calm Health App",
+        description:
+          "Access easy-to-use mental health support designed to meet you where you are and guide you toward greater mental, emotional, and physical wellbeing.",
+        eligibility:
+          'Regular Full-Time<span class="eligibility-divider">|</span>Affordable Care Act Medical Eligible',
+        link:
+          "https://stacks.cdc.gov/view/cdc/107530/cdc_107530_DS1.pdf"
+      }
+
+    };
+
+    function showBenefitDetail(key) {
+      const content = benefitContent[key];
+
+      if (!content) {
+        return;
+      }
+
+      detailCard.innerHTML = `
+        <div class="detail-eyebrow">
+          ${content.eyebrow}
+        </div>
+
+        <h2>
+          ${content.story}
+        </h2>
+
+        <div class="detail-benefit-name">
+          ${content.name}
+        </div>
+
+        <p class="detail-description">
+          ${content.description}
+        </p>
+
+        <div class="eligibility">
+          <span class="eligibility-label">
+            Eligibility
+          </span>
+
+          <span class="eligibility-values">
+            ${content.eligibility}
+          </span>
+        </div>
+
+        <a
+          class="learn-more"
+          href="${content.link}"
+          target="_blank"
+          rel="noopener noreferrer">
+          Learn More
+          <span aria-hidden="true">›</span>
+        </a>
+      `;
+
+      wellbeingHome.style.display = "none";
+      benefitDetail.classList.add("visible");
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    document.querySelectorAll(".benefit-option").forEach(option => {
+      option.addEventListener("click", () => {
+        showBenefitDetail(option.dataset.benefit);
+      });
+    });
+
+    backButton.addEventListener("click", () => {
+      benefitDetail.classList.remove("visible");
+      wellbeingHome.style.display = "block";
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+  </script>
+
+</body>
+</html>
