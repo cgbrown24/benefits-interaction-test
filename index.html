@@ -1,0 +1,2727 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Unitek My Benefits</title>
+<style>
+  :root { --hover-scale: 1.12; --speed: 260ms; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: #fff; }
+  body { min-height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 18px; font-family: Outfit; }
+  .figure-wrap { width: min(96vw, 1280px); }
+  .stage { position: relative; width: 100%; aspect-ratio: 2048/1269; overflow: visible; background: #fff; user-select: none; }
+  .title, .cover, .piece-visual, .core-visual, .hotspots { position: absolute; display: block; }
+  .title img, .cover img, .piece-visual img, .core-visual img { display: block; width: 100%; height: auto; }
+  .title { z-index: 20; pointer-events: none; }
+  .cover { inset: 0; width: 100%; z-index: 12; pointer-events: none; }
+  .piece-visual { z-index: 4; pointer-events: none; transform: translate(0,0) scale(1); transform-origin: 50% 88%; transition: transform var(--speed) ease, filter var(--speed) ease; will-change: transform; }
+  .piece-visual.active { transform: translate(var(--push-x), var(--push-y)) scale(var(--hover-scale)); filter: drop-shadow(0 10px 20px rgba(0,0,0,.18)); z-index: 8; }
+  .core-visual { z-index: 15; pointer-events: none; transform: scale(1); transform-origin: 50% 50%; transition: transform var(--speed) ease, filter var(--speed) ease; will-change: transform; }
+  .core-visual.active { transform: scale(var(--hover-scale)); filter: drop-shadow(0 10px 20px rgba(0,0,0,.18)); z-index: 16; }
+  .hotspots { inset: 0; width: 100%; height: 100%; z-index: 30; overflow: visible; }
+  .hotspot-link { cursor: pointer; outline: none; }
+  .hotspot-link { outline: none; }
+  .hotspot-link path { fill: rgba(0,0,0,0.001); stroke: none !important; }
+  .hotspot-link:focus path, .hotspot-link:hover path { stroke: none !important; }
+
+  .benefits-panel {
+    display: none;
+    width: min(96vw, 1280px);
+    margin: 20px auto 0;
+    padding: 36px;
+    position: relative;
+    background: #fff;
+    border: 1px solid #DADEE0;
+    border-radius: 18px;
+    box-shadow: 0 10px 30px rgba(0,40,72,.08);
+    color: #001820;
+    font-family: Outfit;
+  }
+
+  .benefits-panel.visible {
+    display: block;
+  }
+
+  .panel-close {
+    position: absolute;
+    top: 18px;
+    right: 22px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: #074975;
+    font: inherit;
+    font-size: 30px;
+    line-height: 1;
+    cursor: pointer;
+  }
+
+  .panel-close:hover {
+    color: #007ACC;
+  }
+
+  .panel-eyebrow,
+  .detail-eyebrow {
+    margin-bottom: 8px;
+    color: #007ACC;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 1.2px;
+  }
+
+  .prosperity-home h2,
+  .detail-card h2 {
+    margin: 0 0 12px;
+    color: #074975;
+    font-size: 30px;
+    font-weight: 600;
+    line-height: 1.25;
+  }
+
+  .prosperity-intro {
+    max-width: 760px;
+    margin: 0 0 30px;
+    color: #68747C;
+    font-size: 16px;
+    line-height: 1.6;
+  }
+
+  .benefit-menu {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+  }
+
+  .benefit-option {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    min-height: 76px;
+    padding: 16px 18px;
+    border: 1px solid #DADEE0;
+    border-radius: 12px;
+    background: #fff;
+    color: #074975;
+    font-family: Outfit;
+    font-size: 15px;
+    font-weight: 600;
+    text-align: left;
+  }
+
+  .benefit-option.is-demo {
+    cursor: pointer;
+    transition: border-color 180ms ease, box-shadow 180ms ease, transform 180ms ease;
+  }
+
+  .benefit-option.is-demo:hover,
+  .benefit-option.is-demo:focus-visible {
+    border-color: #007ACC;
+    box-shadow: 0 5px 14px rgba(0,40,72,.08);
+    transform: translateY(-1px);
+    outline: none;
+  }
+
+  .option-icon {
+    width: 40px;
+    height: 40px;
+    flex: 0 0 40px;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    background: #007ACC;
+    color: #fff;
+    font-size: 18px;
+    font-weight: 600;
+  }
+
+  .benefit-detail {
+    display: none;
+  }
+
+  .benefit-detail.visible {
+    display: block;
+  }
+
+  .back-button {
+    margin: 0 0 22px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: #007ACC;
+    font-family: Outfit;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  .back-button:hover {
+    color: #074975;
+  }
+
+  .detail-card {
+    max-width: 720px;
+    padding: 28px;
+    border: 1px solid #DADEE0;
+    border-radius: 16px;
+    background: #fff;
+    box-shadow: 0 6px 18px rgba(0,40,72,.07);
+  }
+
+  .detail-benefit-name {
+    margin: 0 0 12px;
+    color: #074975;
+    font-size: 18px;
+    font-weight: 600;
+  }
+
+  .detail-description {
+    margin: 0 0 22px;
+    color: #68747C;
+    font-size: 15px;
+    line-height: 1.6;
+  }
+
+  .eligibility {
+    margin: 0 0 18px;
+    padding-top: 18px;
+    border-top: 1px solid #DADEE0;
+    font-size: 13px;
+    line-height: 1.7;
+  }
+
+  .eligibility-label {
+    display: block;
+    margin-bottom: 3px;
+    color: #288410;
+    font-weight: 600;
+  }
+
+  .eligibility-values {
+    color: #001820;
+  }
+
+  .eligibility-divider {
+    margin: 0 5px;
+    color: #ACB4BC;
+  }
+
+  .important-note {
+    margin: 0 0 22px;
+    padding: 14px 16px;
+    border-left: 3px solid #007ACC;
+    background: #F7F9FA;
+    color: #68747C;
+    font-size: 13px;
+    line-height: 1.55;
+  }
+
+  .important-note strong {
+    display: block;
+    margin-bottom: 3px;
+    color: #074975;
+    font-weight: 600;
+  }
+
+  .learn-more {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    border-radius: 999px;
+    background: #007ACC;
+    color: #fff;
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+    border: 0;
+    font-family: Outfit;
+    cursor: pointer;
+  }
+
+  .learn-more:hover {
+    background: #074975;
+  }
+
+
+.prosperity-banner {
+  position: relative;
+  width: 100%;
+  height: 220px;
+  margin: 0 0 20px;
+  overflow: hidden;
+  border-radius: 14px;
+  background: #DADEE0;
+}
+
+.prosperity-banner img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 38%;
+}
+
+.prosperity-banner-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 40, 72, 0.66);
+}
+
+.prosperity-banner-text {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 28px 34px;
+  max-width: 760px;
+}
+
+.prosperity-banner-text .panel-eyebrow {
+  margin-bottom: 10px;
+  color: #ffffff;
+}
+
+.prosperity-divider {
+  width: 56px;
+  height: 3px;
+  margin-bottom: 14px;
+  border-radius: 999px;
+  background: #14D0FA;
+}
+
+.prosperity-banner-text h2 {
+  margin: 0;
+  color: #ffffff;
+  font-size: 30px;
+  line-height: 1.2;
+}
+
+
+.option-icon svg {
+  width: 22px;
+  height: 22px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+
+  .category-panel {
+    display: none;
+  }
+
+  .category-panel.visible {
+    display: block;
+  }
+
+  .category-home {
+    display: block;
+  }
+
+  .category-banner {
+    position: relative;
+    width: 100%;
+    height: 240px;
+    margin: 0 0 20px;
+    overflow: hidden;
+    border-radius: 14px;
+    background: #DADEE0;
+  }
+
+  .category-banner img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+  }
+
+  .category-banner-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 40, 72, 0.66);
+  }
+
+  .category-banner-text {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 30px 36px;
+    max-width: 850px;
+  }
+
+  .category-banner-text .panel-eyebrow {
+    margin: 0 0 10px;
+    color: #ffffff;
+  }
+
+  .category-divider {
+    width: 56px;
+    height: 3px;
+    margin-bottom: 14px;
+    border-radius: 999px;
+    background: #14D0FA;
+  }
+
+  .category-banner-text h2 {
+    margin: 0;
+    color: #ffffff;
+    font-size: 30px;
+    line-height: 1.2;
+    font-weight: 600;
+  }
+
+  .category-intro {
+    max-width: 880px;
+    margin: 0 0 30px;
+    color: #68747C;
+    font-size: 16px;
+    line-height: 1.6;
+  }
+
+  .category-benefit-menu {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+  }
+
+  .category-benefit {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    min-height: 76px;
+    padding: 16px 18px;
+    border: 1px solid #DADEE0;
+    border-radius: 12px;
+    background: #ffffff;
+    color: #074975;
+    font-family: Outfit;
+    font-size: 15px;
+    font-weight: 600;
+    text-align: left;
+  }
+
+  .category-benefit .option-icon {
+    flex: 0 0 42px;
+  }
+
+  .category-benefit .option-icon svg {
+    width: 22px;
+    height: 22px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  @media (max-width: 760px) {
+    .category-banner {
+      height: 260px;
+    }
+
+    .category-banner-text {
+      padding: 24px;
+    }
+
+    .category-banner-text h2 {
+      font-size: 25px;
+    }
+
+    .category-benefit-menu {
+      grid-template-columns: 1fr;
+    }
+  }
+
+
+  .benefits-search-wrap {
+    width: min(96vw, 1100px);
+    margin: 26px auto 34px;
+  }
+
+  .benefits-search-label {
+    display: block;
+    margin: 0 0 10px;
+    color: #074975;
+    font-size: 18px;
+    font-weight: 600;
+  }
+
+  .benefits-search-box {
+    position: relative;
+  }
+
+  .benefits-search-icon {
+    position: absolute;
+    top: 50%;
+    left: 18px;
+    width: 20px;
+    height: 20px;
+    transform: translateY(-50%);
+    color: #68747C;
+    pointer-events: none;
+  }
+
+  .benefits-search-input {
+    width: 100%;
+    padding: 14px 52px 14px 50px;
+    border: 1px solid #ACB4BC;
+    border-radius: 999px;
+    background: #ffffff;
+    color: #001820;
+    font-family: Outfit;
+    font-size: 15px;
+    outline: none;
+    transition:
+      border-color 180ms ease,
+      box-shadow 180ms ease;
+  }
+
+  .benefits-search-input:focus {
+    border-color: #007ACC;
+    box-shadow: 0 0 0 3px rgba(0, 122, 204, 0.12);
+  }
+
+  .benefits-search-clear {
+    position: absolute;
+    top: 50%;
+    right: 12px;
+    display: none;
+    width: 34px;
+    height: 34px;
+    transform: translateY(-50%);
+    border: 0;
+    border-radius: 50%;
+    background: transparent;
+    color: #68747C;
+    font-family: Outfit;
+    font-size: 22px;
+    line-height: 1;
+    cursor: pointer;
+  }
+
+  .benefits-search-clear:hover {
+    background: #F2F5F7;
+    color: #074975;
+  }
+
+  .benefits-search-results {
+    display: none;
+    margin-top: 16px;
+  }
+
+  .benefits-search-results.visible {
+    display: block;
+  }
+
+  .search-results-count {
+    margin: 0 0 12px;
+    color: #68747C;
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  .search-results-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+
+  .search-result-card {
+    display: block;
+    padding: 16px 18px;
+    border: 1px solid #DADEE0;
+    border-radius: 14px;
+    background: #ffffff;
+    text-decoration: none;
+    transition:
+      border-color 180ms ease,
+      box-shadow 180ms ease,
+      transform 180ms ease;
+  }
+
+  .search-result-card:hover,
+  .search-result-card:focus-visible {
+    border-color: #007ACC;
+    box-shadow: 0 5px 14px rgba(0, 40, 72, 0.08);
+    transform: translateY(-1px);
+    outline: none;
+  }
+
+  .search-result-category {
+    margin-bottom: 5px;
+    color: #007ACC;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.7px;
+    text-transform: uppercase;
+  }
+
+  .search-result-title {
+    margin-bottom: 6px;
+    color: #074975;
+    font-size: 16px;
+    font-weight: 600;
+  }
+
+  .search-result-description {
+    margin-bottom: 10px;
+    color: #68747C;
+    font-size: 13px;
+    line-height: 1.5;
+  }
+
+  .search-result-link {
+    color: #007ACC;
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  .search-empty {
+    padding: 18px;
+    border: 1px solid #DADEE0;
+    border-radius: 14px;
+    background: #F7F9FA;
+  }
+
+  .search-empty strong {
+    display: block;
+    margin-bottom: 5px;
+    color: #074975;
+    font-size: 15px;
+  }
+
+  .search-empty p {
+    margin: 0;
+    color: #68747C;
+    font-size: 13px;
+    line-height: 1.5;
+  }
+
+  @media (max-width: 760px) {
+    .benefits-search-wrap {
+      margin: 20px auto 28px;
+    }
+
+    .search-results-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+
+  .category-benefit {
+    text-decoration: none;
+    cursor: pointer;
+  }
+
+  .category-benefit:hover,
+  .category-benefit:focus-visible {
+    border-color: #007ACC;
+    box-shadow: 0 5px 14px rgba(0, 40, 72, 0.08);
+    transform: translateY(-1px);
+    outline: none;
+  }
+
+  /* Give hero photography more vertical room so faces are not cropped. */
+  .category-banner {
+    height: 320px;
+  }
+
+  .category-banner img {
+    object-position: center 25%;
+  }
+
+  #corePanel .category-banner img {
+    object-position: center 28%;
+  }
+
+  #advancementPanel .category-banner img {
+    object-position: center 30%;
+  }
+
+  #supportPanel .category-banner img {
+    object-position: center 28%;
+  }
+
+  #wellbeingPanel .category-banner img {
+    object-position: center 30%;
+  }
+
+  #prosperityPanel .category-banner img {
+    object-position: center 30%;
+  }
+
+  @media (max-width: 760px) {
+    .category-banner {
+      height: 290px;
+    }
+
+    .category-banner img {
+      object-position: center 25%;
+    }
+  }
+
+
+  .benefits-layout-row {
+    width: min(96vw, 1500px);
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 28px;
+    margin: 0 auto;
+  }
+
+  .benefits-layout-row .figure-wrap {
+    width: min(96vw, 1280px);
+    flex: 1 1 100%;
+    transition: flex-basis 260ms ease, max-width 260ms ease;
+  }
+
+  .benefits-layout-row.panel-open .figure-wrap {
+    flex: 0 1 54%;
+    max-width: 760px;
+  }
+
+  .benefits-layout-row .benefits-panel {
+    margin: 0;
+  }
+
+  .benefits-layout-row.panel-open .benefits-panel.visible {
+    display: block;
+    flex: 1 1 46%;
+    width: auto;
+    max-width: 720px;
+    min-width: 0;
+  }
+
+  .benefits-search-wrap {
+    width: min(96vw, 1100px);
+    margin: 30px auto 34px;
+  }
+
+  .embedded-core-category-view {
+    display: none;
+  }
+
+  .embedded-core-category-view.visible {
+    display: block;
+  }
+
+  .embedded-core-section-title {
+    margin: 0 0 8px;
+    color: #074975;
+    font-size: 28px;
+    font-weight: 600;
+    line-height: 1.2;
+  }
+
+  .plans-available {
+    margin: 0 0 20px;
+    padding: 16px 18px;
+    border-radius: 12px;
+    background: #F7F9FA;
+  }
+
+  .plans-available strong {
+    display: block;
+    margin-bottom: 8px;
+    color: #074975;
+    font-weight: 600;
+  }
+
+  .plans-available ul {
+    margin: 0;
+    padding-left: 20px;
+    color: #001820;
+    line-height: 1.6;
+  }
+
+  button.category-benefit {
+    width: 100%;
+    cursor: pointer;
+  }
+
+  @media (max-width: 900px) {
+    .benefits-layout-row,
+    .benefits-layout-row.panel-open {
+      flex-direction: column;
+      width: 100%;
+    }
+
+    .benefits-layout-row.panel-open .figure-wrap,
+    .benefits-layout-row.panel-open .benefits-panel.visible {
+      width: 100%;
+      max-width: none;
+      flex: 1 1 auto;
+    }
+  }
+
+
+  .option-icon {
+    background: #002848;
+    color: #14D0FA;
+  }
+
+  .option-icon > span {
+    font-size: 28px;
+    font-weight: 700;
+    line-height: 1;
+    display: block;
+  }
+
+
+  .embedded-section-detail {
+    display: none;
+  }
+  .embedded-section-detail.visible {
+    display: block;
+  }
+  button.category-benefit {
+    width: 100%;
+    cursor: pointer;
+  }
+
+
+  .benefits-search-wrap {
+    width: min(86vw, 760px);
+    margin: 10px auto 22px;
+  }
+
+  .benefits-search-label {
+    margin-bottom: 8px;
+    text-align: center;
+  }
+
+  @media (max-width: 760px) {
+    .benefits-search-wrap {
+      width: min(92vw, 640px);
+      margin: 10px auto 18px;
+    }
+  }
+
+
+  .benefits-search-wrap {
+    width: min(86vw, 760px);
+    margin: -12px auto 22px;
+  }
+
+  @media (max-width: 760px) {
+    .benefits-search-wrap {
+      width: min(92vw, 640px);
+      margin: -6px auto 18px;
+    }
+  }
+
+
+  .option-icon > span {
+    display: block !important;
+    font-family: Arial, Helvetica, sans-serif !important;
+    font-size: 30px !important;
+    font-weight: 400 !important;
+    line-height: 1 !important;
+    transform: translateY(-1px);
+  }
+
+
+  /* Final desktop layout: arc + search stay together on the left; open card stays on the right */
+  .benefits-layout-row {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: flex-start !important;
+    justify-content: center !important;
+    gap: 28px !important;
+    width: min(96vw, 1500px) !important;
+    margin: 0 auto !important;
+  }
+
+  .arc-column {
+    flex: 1 1 100%;
+    min-width: 0;
+    max-width: 1280px;
+    transition: flex-basis 260ms ease, max-width 260ms ease;
+  }
+
+  .arc-column .figure-wrap {
+    width: 100% !important;
+    max-width: none !important;
+    flex: none !important;
+  }
+
+  .benefits-layout-row.panel-open .arc-column {
+    flex: 0 1 54%;
+    max-width: 760px;
+  }
+
+  .benefits-layout-row.panel-open .benefits-panel.visible {
+    display: block !important;
+    flex: 1 1 46% !important;
+    width: auto !important;
+    max-width: 720px !important;
+    min-width: 0 !important;
+    margin: 0 !important;
+  }
+
+  .arc-column .benefits-search-wrap {
+    width: min(76%, 620px) !important;
+    margin: -18px auto 18px !important;
+    transform: none !important;
+    position: relative;
+    z-index: 40;
+  }
+
+  .arc-column .benefits-search-label {
+    display: block;
+    margin: 0 0 8px !important;
+    padding-top: 3px;
+    text-align: center;
+  }
+
+  .benefits-layout-row.panel-open .arc-column .benefits-search-wrap {
+    width: min(88%, 560px) !important;
+  }
+
+  @media (max-width: 900px) {
+    .benefits-layout-row,
+    .benefits-layout-row.panel-open {
+      flex-direction: column !important;
+      width: 100% !important;
+    }
+
+    .arc-column,
+    .benefits-layout-row.panel-open .arc-column,
+    .benefits-layout-row.panel-open .benefits-panel.visible {
+      width: 100% !important;
+      max-width: none !important;
+      flex: 1 1 auto !important;
+    }
+
+    .arc-column .benefits-search-wrap,
+    .benefits-layout-row.panel-open .arc-column .benefits-search-wrap {
+      width: min(92%, 620px) !important;
+      margin: -8px auto 14px !important;
+    }
+  }
+
+
+  .button-row {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 12px !important;
+    align-items: center !important;
+  }
+
+  .learn-more,
+  .access-button {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    padding: 10px 20px !important;
+    border-radius: 999px !important;
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    text-decoration: none !important;
+    font-family: Outfit !important;
+  }
+
+  .access-button {
+    border: 1px solid #007ACC !important;
+    background: #ffffff !important;
+    color: #007ACC !important;
+  }
+
+  .access-button:hover {
+    background: #F4FAFD !important;
+    color: #074975 !important;
+    border-color: #074975 !important;
+  }
+
+  .option-icon > span {
+    font-size: 32px !important;
+    transform: translateY(-2px) !important;
+  }
+
+</style>
+</head>
+<body>
+<div class="benefits-layout-row" id="benefitsLayoutRow">
+<div class="arc-column">
+<div class="figure-wrap">
+  <div class="stage" aria-label="Interactive My Benefits graphic">
+    
+
+    <div class="title" style="left:33.007812%;top:12.293144%;width:33.984375%"><img src="assets/my-benefits-title.png" alt="My Benefits"></div>
+
+    <div class="piece-visual" data-piece="prosperity" style="--push-x:-5.5%;--push-y:2.0%;left:17.724609%;top:50.118203%;width:22.705078%"><img src="assets/arc-prosperity.png" alt=""></div>
+    <div class="piece-visual" data-piece="wellbeing" style="--push-x:-3.5%;--push-y:-3.5%;left:27.001953%;top:35.303388%;width:23.339844%"><img src="assets/arc-wellbeing.png" alt=""></div>
+    <div class="piece-visual" data-piece="advancement" style="--push-x:3.5%;--push-y:-3.5%;left:50.292969%;top:35.303388%;width:23.339844%"><img src="assets/arc-advancement.png" alt=""></div>
+    <div class="piece-visual" data-piece="support" style="--push-x:5.5%;--push-y:2.0%;left:60.205078%;top:50.197006%;width:22.705078%"><img src="assets/arc-support.png" alt=""></div>
+
+    <div class="cover"><img src="assets/arc-cover.png" alt="" aria-hidden="true"></div>
+
+    <div class="core-visual" data-piece="core" style="left:43.701172%;top:72.104019%;width:12.548828%"><img src="assets/arc-core.png" alt=""></div>
+
+    <svg class="hotspots" viewBox="0 0 2048 1269" aria-hidden="false">
+      <a class="hotspot-link" href="#" aria-label="My Prosperity" data-target="prosperity" role="button">
+        <path d="M 739.0 1114.5 L 362.5 1114.0 L 372.5 988.0 L 412.5 853.0 L 474.5 738.0 L 561.0 635.5 L 827.5 902.0 L 784.5 955.0 L 758.5 1006.0 L 739.0 1114.5 Z"></path>
+      </a>
+      <a class="hotspot-link" href="#" aria-label="My Wellbeing" data-target="wellbeing" role="button">
+        <path d="M 819.0 912.5 L 552.5 644.0 L 644.0 566.5 L 764.0 499.5 L 893.0 459.5 L 1030.0 447.5 L 1030.5 824.0 L 976.0 828.5 L 917.0 845.5 L 865.0 873.5 L 819.0 912.5 Z"></path>
+      </a>
+      <a class="hotspot-link" href="#" aria-label="My Advancement" data-target="advancement" role="button">
+        <path d="M 1242.0 912.5 L 1152.0 849.5 L 1094.0 830.5 L 1029.5 824.0 L 1030.0 447.5 L 1167.0 459.5 L 1296.0 499.5 L 1416.0 566.5 L 1507.5 644.0 L 1242.0 912.5 Z"></path>
+      </a>
+      <a class="hotspot-link" href="#" aria-label="My Support" data-target="support" role="button">
+        <path d="M 1697.0 1114.5 L 1319.5 1114.0 L 1315.5 1057.0 L 1296.5 995.0 L 1272.5 951.0 L 1232.5 902.0 L 1498.0 636.5 L 1577.5 727.0 L 1642.5 842.0 L 1684.5 974.0 L 1697.0 1114.5 Z"></path>
+      </a>
+      <a class="hotspot-link" href="#" aria-label="Core Benefits" data-target="core" role="button">
+        <path d="M 600 1115 L 600 1015 C 600 820 790 675 1024 675 C 1258 675 1448 820 1448 1015 L 1448 1115 Z"></path>
+      </a>
+    </svg>
+  </div>
+</div>
+
+
+
+
+<section class="benefits-search-wrap" aria-label="Search benefits">
+  <label class="benefits-search-label" for="benefitsSearch">
+    Looking for something specific?
+  </label>
+
+  <div class="benefits-search-box">
+    <svg class="benefits-search-icon" viewBox="0 0 24 24" aria-hidden="true">
+      <circle cx="11" cy="11" r="6.5" fill="none" stroke="currentColor" stroke-width="1.8"></circle>
+      <path d="m16 16 4 4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"></path>
+    </svg>
+
+    <input
+      class="benefits-search-input"
+      id="benefitsSearch"
+      type="search"
+      placeholder="Search benefits, resources, or eligibility..."
+      autocomplete="off">
+
+    <button
+      class="benefits-search-clear"
+      id="benefitsSearchClear"
+      type="button"
+      aria-label="Clear search">
+      ×
+    </button>
+  </div>
+
+  <div
+    class="benefits-search-results"
+    id="benefitsSearchResults"
+    aria-live="polite">
+</div>
+</section>
+</div>
+
+<div class="benefits-panel category-panel" id="corePanel">
+  <button class="panel-close category-close" type="button" aria-label="Close Core Benefits">×</button>
+
+  <div class="category-home" id="embeddedCoreHome">
+    <div class="category-banner">
+      <img src="assets/core-benefits.png" alt="Adults walking together outside modern medical offices">
+      <div class="category-banner-overlay"></div>
+      <div class="category-banner-text">
+        <div class="panel-eyebrow">CORE BENEFITS</div>
+        <div class="category-divider" aria-hidden="true"></div>
+        <h2>Coverage That Helps Protect What Matters Most</h2>
+      </div>
+    </div>
+
+    <p class="category-intro">
+      Explore benefits designed to support your health, provide financial protection,
+      and help you care for yourself and those who matter most.
+    </p>
+
+    <div class="category-benefit-menu">
+      <button class="category-benefit embedded-core-category" type="button" data-core-category="medical">
+        <span class="option-icon"><span aria-hidden="true">›</span></span>
+        <span>Medical</span>
+      </button>
+
+      <button class="category-benefit embedded-core-category" type="button" data-core-category="dental">
+        <span class="option-icon"><span aria-hidden="true">›</span></span>
+        <span>Dental</span>
+      </button>
+
+      <button class="category-benefit embedded-core-category" type="button" data-core-category="vision">
+        <span class="option-icon"><span aria-hidden="true">›</span></span>
+        <span>Vision</span>
+      </button>
+
+      <button class="category-benefit embedded-core-category" type="button" data-core-category="life">
+        <span class="option-icon"><span aria-hidden="true">›</span></span>
+        <span>Life &amp; Disability</span>
+      </button>
+
+      <button class="category-benefit embedded-core-category" type="button" data-core-category="supplemental">
+        <span class="option-icon"><span aria-hidden="true">›</span></span>
+        <span>Supplemental Protection</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="embedded-core-category-view" id="embeddedCoreCategoryView">
+    <button class="back-button" id="embeddedBackToCore" type="button">← Back to Core Benefits</button>
+    <h2 class="embedded-core-section-title" id="embeddedCoreCategoryTitle"></h2>
+    <p class="category-intro" id="embeddedCoreCategoryIntro"></p>
+    <div class="benefit-menu" id="embeddedCoreBenefitMenu"></div>
+  </div>
+
+  <div class="benefit-detail" id="embeddedCoreDetail">
+    <button class="back-button" id="embeddedBackToCategory" type="button"></button>
+    <div class="detail-card" id="embeddedCoreDetailCard"></div>
+  </div>
+</div>
+
+<div class="benefits-panel category-panel" id="advancementPanel">
+  <button class="panel-close category-close" type="button" aria-label="Close My Advancement">×</button>
+
+  <div class="category-home">
+    <div class="category-banner">
+      <img src="assets/my-advancement.png" alt="Professional learning at a laptop in a bright modern workspace">
+      <div class="category-banner-overlay"></div>
+
+      <div class="category-banner-text">
+        <div class="panel-eyebrow">MY ADVANCEMENT</div>
+        <div class="category-divider" aria-hidden="true"></div>
+        <h2>Grow Your Knowledge and Expand Your Possibilities</h2>
+      </div>
+    </div>
+
+    <p class="category-intro">Explore opportunities designed to support your educational goals and help you continue growing personally and professionally.</p>
+
+    <div class="category-benefit-menu">
+      <button class="category-benefit embedded-section-benefit" type="button" data-section="advancement" data-benefit="pathways">
+        <span class="option-icon"><span aria-hidden="true">›</span></span>
+        <span>Educational Pathways</span>
+      </button>
+      <button class="category-benefit embedded-section-benefit" type="button" data-section="advancement" data-benefit="tuition">
+        <span class="option-icon"><span aria-hidden="true">›</span></span>
+        <span>Tuition Assistance Program</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="benefit-detail embedded-section-detail" id="advancementEmbeddedDetail">
+    <button class="back-button" type="button" data-back-section="advancement">← Back to My Advancement</button>
+    <div class="detail-card" id="advancementEmbeddedDetailCard"></div>
+  </div>
+</div>
+
+
+<div class="benefits-panel category-panel" id="supportPanel">
+  <button class="panel-close category-close" type="button" aria-label="Close My Support">×</button>
+
+  <div class="category-home">
+    <div class="category-banner">
+      <img src="assets/my-support.png" alt="Two adults having a supportive conversation in a modern lounge">
+      <div class="category-banner-overlay"></div>
+
+      <div class="category-banner-text">
+        <div class="panel-eyebrow">MY SUPPORT</div>
+        <div class="category-divider" aria-hidden="true"></div>
+        <h2>Support for Life’s Moments, Big and Small</h2>
+      </div>
+    </div>
+
+    <p class="category-intro">Explore resources designed to provide guidance, assistance, and support when you and your loved ones need it.</p>
+
+    <div class="category-benefit-menu">
+      <button class="category-benefit embedded-section-benefit" type="button" data-section="support" data-benefit="eap">
+        <span class="option-icon"><span aria-hidden="true">›</span></span>
+        <span>TELUS Employee Assistance Program</span>
+      </button>
+      <button class="category-benefit embedded-section-benefit" type="button" data-section="support" data-benefit="crisis">
+        <span class="option-icon"><span aria-hidden="true">›</span></span>
+        <span>Critical Incident Community Crisis Line</span>
+      </button>
+      <button class="category-benefit embedded-section-benefit" type="button" data-section="support" data-benefit="empathy">
+        <span class="option-icon"><span aria-hidden="true">›</span></span>
+        <span>Empathy Support</span>
+      </button>
+      <button class="category-benefit embedded-section-benefit" type="button" data-section="support" data-benefit="voya">
+        <span class="option-icon"><span aria-hidden="true">›</span></span>
+        <span>Voya Cares</span>
+      </button>
+      <button class="category-benefit embedded-section-benefit" type="button" data-section="support" data-benefit="medicare">
+        <span class="option-icon"><span aria-hidden="true">›</span></span>
+        <span>Medicare Consulting Services</span>
+      </button>
+      <button class="category-benefit embedded-section-benefit" type="button" data-section="support" data-benefit="travel">
+        <span class="option-icon"><span aria-hidden="true">›</span></span>
+        <span>Travel Assistance Program</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="benefit-detail embedded-section-detail" id="supportEmbeddedDetail">
+    <button class="back-button" type="button" data-back-section="support">← Back to My Support</button>
+    <div class="detail-card" id="supportEmbeddedDetailCard"></div>
+  </div>
+</div>
+
+
+<div class="benefits-panel category-panel" id="wellbeingPanel">
+  <button class="panel-close category-close" type="button" aria-label="Close My Well-Being">×</button>
+
+  <div class="category-home">
+    <div class="category-banner">
+      <img src="assets/my-wellbeing.png" alt="Woman enjoying a quiet personal moment at an outdoor café">
+      <div class="category-banner-overlay"></div>
+
+      <div class="category-banner-text">
+        <div class="panel-eyebrow">MY WELLBEING</div>
+        <div class="category-divider" aria-hidden="true"></div>
+        <h2>Make Your Wellbeing a Priority</h2>
+      </div>
+    </div>
+
+    <p class="category-intro">Explore resources designed to support your wellbeing and help you build healthy habits for everyday life.</p>
+
+    <div class="category-benefit-menu">
+      <button class="category-benefit embedded-section-benefit" type="button" data-section="wellbeing" data-benefit="thrive">
+        <span class="option-icon"><span aria-hidden="true">›</span></span>
+        <span>Unitek Thrive Wellness</span>
+      </button>
+      <button class="category-benefit embedded-section-benefit" type="button" data-section="wellbeing" data-benefit="calm">
+        <span class="option-icon"><span aria-hidden="true">›</span></span>
+        <span>Calm Health App</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="benefit-detail embedded-section-detail" id="wellbeingEmbeddedDetail">
+    <button class="back-button" type="button" data-back-section="wellbeing">← Back to My Wellbeing</button>
+    <div class="detail-card" id="wellbeingEmbeddedDetailCard"></div>
+  </div>
+</div>
+
+
+<div class="benefits-panel category-panel" id="prosperityPanel">
+  <button class="panel-close category-close" type="button" aria-label="Close My Prosperity">×</button>
+
+  <div class="category-home">
+    <div class="category-banner">
+      <img src="assets/my-prosperity.png" alt="Man planning at a kitchen island with a dog nearby">
+      <div class="category-banner-overlay"></div>
+
+      <div class="category-banner-text">
+        <div class="panel-eyebrow">MY PROSPERITY</div>
+        <div class="category-divider" aria-hidden="true"></div>
+        <h2>Helping you make the most of today while planning for tomorrow</h2>
+      </div>
+    </div>
+
+    <p class="category-intro">Explore benefits and resources designed to help you save, plan ahead, manage expenses, and build toward your financial goals.</p>
+
+    <div class="category-benefit-menu">
+      <button class="category-benefit embedded-section-benefit" type="button" data-section="prosperity" data-benefit="health-savings">
+        <span class="option-icon"><span aria-hidden="true">›</span></span>
+        <span>Health Savings Account</span>
+      </button>
+      <button class="category-benefit embedded-section-benefit" type="button" data-section="prosperity" data-benefit="401k">
+        <span class="option-icon"><span aria-hidden="true">›</span></span>
+        <span>401(k) Retirement Plan</span>
+      </button>
+      <button class="category-benefit embedded-section-benefit" type="button" data-section="prosperity" data-benefit="fsa">
+        <span class="option-icon"><span aria-hidden="true">›</span></span>
+        <span>Flexible Spending Account</span>
+      </button>
+      <button class="category-benefit embedded-section-benefit" type="button" data-section="prosperity" data-benefit="limited-fsa">
+        <span class="option-icon"><span aria-hidden="true">›</span></span>
+        <span>Limited Flexible Spending Account</span>
+      </button>
+      <button class="category-benefit embedded-section-benefit" type="button" data-section="prosperity" data-benefit="dependent-care">
+        <span class="option-icon"><span aria-hidden="true">›</span></span>
+        <span>Dependent Care Flexible Spending Account</span>
+      </button>
+      <button class="category-benefit embedded-section-benefit" type="button" data-section="prosperity" data-benefit="commuter">
+        <span class="option-icon"><span aria-hidden="true">›</span></span>
+        <span>Commuter Benefits Program</span>
+      </button>
+      <button class="category-benefit embedded-section-benefit" type="button" data-section="prosperity" data-benefit="benefithub">
+        <span class="option-icon"><span aria-hidden="true">›</span></span>
+        <span>BenefitHub Discounts &amp; Savings</span>
+      </button>
+      <button class="category-benefit embedded-section-benefit" type="button" data-section="prosperity" data-benefit="lifemart">
+        <span class="option-icon"><span aria-hidden="true">›</span></span>
+        <span>LifeMart Discounts &amp; Savings</span>
+      </button>
+      <button class="category-benefit embedded-section-benefit" type="button" data-section="prosperity" data-benefit="pet">
+        <span class="option-icon"><span aria-hidden="true">›</span></span>
+        <span>Pet Insurance</span>
+      </button>
+    </div>
+  </div>
+
+
+  <div class="benefit-detail embedded-section-detail" id="prosperityEmbeddedDetail">
+    <button class="back-button" type="button" data-back-section="prosperity">← Back to My Prosperity</button>
+    <div class="detail-card" id="prosperityEmbeddedDetailCard"></div>
+  </div>
+</div>
+
+
+</div>
+
+
+
+<script>
+  const links = document.querySelectorAll('.hotspot-link');
+  const pieces = Object.fromEntries(
+    [...document.querySelectorAll('[data-piece]')].map(el => [el.dataset.piece, el])
+  );
+  const benefitsLayoutRow = document.getElementById('benefitsLayoutRow');
+
+  const panels = Object.fromEntries(
+    [...document.querySelectorAll('.category-panel')].map(panel => [
+      panel.id.replace('Panel', ''),
+      panel
+    ])
+  );
+
+  function clearActivePiece() {
+    Object.values(pieces).forEach(piece => piece.classList.remove('active'));
+  }
+
+  function closeAllPanels() {
+    Object.values(panels).forEach(panel => panel.classList.remove('visible'));
+    ["prosperity","wellbeing","advancement","support"].forEach(resetEmbeddedSection);
+    benefitsLayoutRow?.classList.remove('panel-open');
+    resetEmbeddedCore();
+    clearActivePiece();
+  }
+
+  function openCategory(target) {
+    closeAllPanels();
+
+    if (pieces[target]) {
+      pieces[target].classList.add('active');
+    }
+
+    if (panels[target]) {
+      benefitsLayoutRow?.classList.add('panel-open');
+      panels[target].classList.add('visible');
+      if (target === 'core') {
+        resetEmbeddedCore();
+      }
+    }
+  }
+
+  links.forEach(link => {
+    link.addEventListener('click', event => {
+      event.preventDefault();
+      openCategory(link.dataset.target);
+    });
+
+    link.addEventListener('mouseenter', () => {
+      clearActivePiece();
+      if (pieces[link.dataset.target]) {
+        pieces[link.dataset.target].classList.add('active');
+      }
+    });
+
+    link.addEventListener('mouseleave', () => {
+      if (!panels[link.dataset.target]?.classList.contains('visible')) {
+        pieces[link.dataset.target]?.classList.remove('active');
+      }
+    });
+
+    link.addEventListener('focus', () => {
+      clearActivePiece();
+      if (pieces[link.dataset.target]) {
+        pieces[link.dataset.target].classList.add('active');
+      }
+    });
+
+    link.addEventListener('blur', () => {
+      if (!panels[link.dataset.target]?.classList.contains('visible')) {
+        pieces[link.dataset.target]?.classList.remove('active');
+      }
+    });
+  });
+
+  document.querySelectorAll('.category-close').forEach(button => {
+    button.addEventListener('click', closeAllPanels);
+  });
+
+
+  const eligibilityFullTimeAca =
+    'Regular Full-Time<span class="eligibility-divider">|</span>Affordable Care Act Medical Eligible';
+
+  const embeddedCoreCategoryContent = {
+      medical: {
+        title: "Medical",
+        intro:
+          "Explore medical coverage options available based on your eligibility and location.",
+        benefits: [
+          "aetna-ppo-2000",
+          "aetna-hdhp-3400",
+          "aetna-hmo-ca",
+          "aetna-epo",
+          "kaiser-copay",
+          "kaiser-deductible",
+          "part-time-medical"
+        ]
+      },
+
+      dental: {
+        title: "Dental",
+        intro:
+          "Explore dental coverage options available based on your eligibility.",
+        benefits: [
+          "aetna-core-dental",
+          "aetna-buy-up-dental",
+          "ameritas-dental"
+        ]
+      },
+
+      vision: {
+        title: "Vision",
+        intro:
+          "Explore vision coverage options available based on your eligibility.",
+        benefits: [
+          "vsp",
+          "ameritas-vision"
+        ]
+      },
+
+      life: {
+        title: "Life & Disability",
+        intro:
+          "Explore benefits designed to provide financial protection and support when life takes an unexpected turn.",
+        benefits: [
+          "basic-life",
+          "long-term-disability",
+          "short-term-disability",
+          "supplemental-life-options"
+        ]
+      },
+
+      supplemental: {
+        title: "Supplemental Protection",
+        intro:
+          "Explore voluntary benefits that can provide additional financial support when certain covered events occur.",
+        benefits: [
+          "critical-illness",
+          "hospital-indemnity",
+          "accident-insurance"
+        ]
+      }
+    };
+  const embeddedCoreBenefitContent = {
+
+      "aetna-ppo-2000": {
+        label: "Aetna PPO 2000",
+        eyebrow: "EXPLORE YOUR MEDICAL COVERAGE",
+        story: "Choose Coverage That Fits Your Needs",
+        name: "Aetna PPO 2000",
+        description:
+          "Explore the Aetna PPO 2000 medical plan, featuring a $2,000 deductible.",
+        eligibility:
+          eligibilityFullTimeAca,
+        note: "",
+        plans: [],
+        link:
+          "https://unteked.sharepoint.com/sites/UnitekLearning/Human%20Resources/Forms/AllItems.aspx?id=%2Fsites%2FUnitekLearning%2FHuman%20Resources%2FBenefits%2FAetna%2FAetna%20Benefit%20Plan%20Summaries%2FAetna%20%2D%202026%20Unitek%202000%20PPO%20SBC%2Epdf&parent=%2Fsites%2FUnitekLearning%2FHuman%20Resources%2FBenefits%2FAetna%2FAetna%20Benefit%20Plan%20Summaries&p=true&ga=1"
+      },
+
+      "aetna-hdhp-3400": {
+        label: "Aetna HDHP 3400",
+        eyebrow: "PLAN FOR YOUR HEALTHCARE NEEDS",
+        story: "Pair Medical Coverage With a Health Savings Account",
+        name: "Aetna HDHP 3400",
+        description:
+          "Explore the Aetna High Deductible Health Plan, which allows enrolled employees to participate in the Health Savings Account.",
+        eligibility:
+          eligibilityFullTimeAca,
+        note: "",
+        plans: [],
+        link:
+          "https://unteked.sharepoint.com/sites/UnitekLearning/Human%20Resources/Forms/AllItems.aspx?id=%2Fsites%2FUnitekLearning%2FHuman%20Resources%2FBenefits%2FAetna%2FAetna%20Benefit%20Plan%20Summaries%2F2026%20Unitek%20HDHP%20SBC%2Epdf&parent=%2Fsites%2FUnitekLearning%2FHuman%20Resources%2FBenefits%2FAetna%2FAetna%20Benefit%20Plan%20Summaries&p=true&ga=1"
+      },
+
+      "aetna-hmo-ca": {
+        label: "Aetna Deductible HMO (CA Only)",
+        eyebrow: "EXPLORE YOUR MEDICAL COVERAGE",
+        story: "A Medical Plan Option for California Employees",
+        name: "Aetna Deductible HMO (CA Only)",
+        description:
+          "Explore this Aetna HMO medical plan available to eligible employees in California.",
+        eligibility:
+          eligibilityFullTimeAca,
+        note: "",
+        plans: [],
+        link:
+          "https://unteked.sharepoint.com/sites/UnitekLearning/Human%20Resources/Forms/AllItems.aspx?id=%2Fsites%2FUnitekLearning%2FHuman%20Resources%2FBenefits%2FAetna%2FAetna%20Benefit%20Plan%20Summaries%2F2026%20Unitek%20HMO%20SBC%2Epdf&parent=%2Fsites%2FUnitekLearning%2FHuman%20Resources%2FBenefits%2FAetna%2FAetna%20Benefit%20Plan%20Summaries&p=true&ga=1"
+      },
+
+      "aetna-epo": {
+        label: "Aetna Deductible EPO (all other states)",
+        eyebrow: "EXPLORE YOUR MEDICAL COVERAGE",
+        story: "A Medical Plan Option Beyond California",
+        name: "Aetna Deductible EPO (all other states)",
+        description:
+          "Explore this Aetna EPO medical plan available to eligible employees in states outside of California.",
+        eligibility:
+          eligibilityFullTimeAca,
+        note: "",
+        plans: [],
+        link:
+          "https://unteked.sharepoint.com/sites/UnitekLearning/Human%20Resources/Forms/AllItems.aspx?id=%2Fsites%2FUnitekLearning%2FHuman%20Resources%2FBenefits%2FAetna%2FAetna%20Benefit%20Plan%20Summaries%2F2026%20Unitek%201500%20EPO%20SBC%2Epdf&parent=%2Fsites%2FUnitekLearning%2FHuman%20Resources%2FBenefits%2FAetna%2FAetna%20Benefit%20Plan%20Summaries&p=true&ga=1"
+      },
+
+      "kaiser-copay": {
+        label: "Kaiser - Copay HMO Plan (CA Only)",
+        eyebrow: "EXPLORE YOUR MEDICAL COVERAGE",
+        story: "Another Medical Plan Option for California Employees",
+        name: "Kaiser - Copay HMO Plan (CA Only)",
+        description:
+          "Explore the Kaiser Copay HMO medical plan available to eligible employees in California.",
+        eligibility:
+          eligibilityFullTimeAca,
+        note: "",
+        plans: [],
+        link:
+          "https://unteked.sharepoint.com/sites/UnitekLearning/Human%20Resources/Forms/AllItems.aspx?id=%2Fsites%2FUnitekLearning%2FHuman%20Resources%2FBenefits%2FKaiser%2FKaiser%20Benefit%20Plan%20Summaries%2FKaiser%20SBC%20HMO%2Epdf&parent=%2Fsites%2FUnitekLearning%2FHuman%20Resources%2FBenefits%2FKaiser%2FKaiser%20Benefit%20Plan%20Summaries&p=true&ga=1"
+      },
+
+      "kaiser-deductible": {
+        label: "Kaiser - $1500 Deductible HMO Plan (CA Only)",
+        eyebrow: "EXPLORE YOUR MEDICAL COVERAGE",
+        story: "Explore a Deductible HMO Option in California",
+        name: "Kaiser - $1500 Deductible HMO Plan (CA Only)",
+        description:
+          "Explore the Kaiser $1500 Deductible HMO medical plan available to eligible employees in California.",
+        eligibility:
+          eligibilityFullTimeAca,
+        note: "",
+        plans: [],
+        link:
+          "https://unteked.sharepoint.com/sites/UnitekLearning/Human%20Resources/Forms/AllItems.aspx?id=%2Fsites%2FUnitekLearning%2FHuman%20Resources%2FBenefits%2FKaiser%2FKaiser%20Benefit%20Plan%20Summaries%2FKaiser%20SBC%20Deductible%20HMO%2Epdf&parent=%2Fsites%2FUnitekLearning%2FHuman%20Resources%2FBenefits%2FKaiser%2FKaiser%20Benefit%20Plan%20Summaries&p=true&ga=1"
+      },
+
+      "part-time-medical": {
+        label: "Part-Time Medical Options",
+        eyebrow: "MEDICAL COVERAGE FOR PART-TIME EMPLOYEES",
+        story: "Explore Your Part-Time Medical Options",
+        name: "Part-Time Medical Options",
+        description:
+          "Explore medical coverage options available to eligible Regular Part-Time employees.",
+        eligibility:
+          "Regular Part-Time",
+        note:
+          "MEC plans are designed to offer coverage for limited basic medical services, including wellness visits, virtual visits, urgent care, and prescription drug discounts. Coverage is limited to providers in the PHCS Limited Benefit Plan Network. These plans do not cover catastrophic or rare illnesses and do not meet the criteria for ACA coverage.",
+        plans: [
+          "Apex - MEC Plus & Globe Life Plan",
+          "Minimum Essential Coverage (MEC) Plus Advantage & Globe Life GLI Plan"
+        ],
+        link:
+          "https://unteked.sharepoint.com/sites/UnitekLearning/Human%20Resources/Forms/AllItems.aspx?id=%2Fsites%2FUnitekLearning%2FHuman%20Resources%2FBenefits%2FBenefits%20for%20Part%2DTime%20Colleagues%2FBenefits%20for%20Part%20Time%20Employees%2Epdf&parent=%2Fsites%2FUnitekLearning%2FHuman%20Resources%2FBenefits%2FBenefits%20for%20Part%2DTime%20Colleagues&p=true&ga=1"
+      },
+
+      "aetna-core-dental": {
+        label: "Aetna Core Dental Plan",
+        eyebrow: "CARE FOR YOUR DENTAL HEALTH",
+        story: "Coverage for Your Dental Care Needs",
+        name: "Aetna Core Dental Plan",
+        description:
+          "Explore the Aetna Core Dental Plan, offering a $1,250 calendar-year maximum benefit per individual.",
+        eligibility:
+          eligibilityFullTimeAca,
+        note: "",
+        plans: [],
+        link:
+          "https://unteked.sharepoint.com/sites/UnitekLearning/Human%20Resources/Forms/AllItems.aspx?id=%2Fsites%2FUnitekLearning%2FHuman%20Resources%2FBenefits%2FAetna%20Dental%2FAetna%20Dental%20PPO%20%2D%20Core%20Plan%2Epdf&parent=%2Fsites%2FUnitekLearning%2FHuman%20Resources%2FBenefits%2FAetna%20Dental&p=true&ga=1"
+      },
+
+      "aetna-buy-up-dental": {
+        label: "Aetna Buy Up Dental Plan",
+        eyebrow: "EXPLORE ADDITIONAL DENTAL COVERAGE",
+        story: "Another Option for Your Dental Care",
+        name: "Aetna Buy Up Dental Plan",
+        description:
+          "Explore the Aetna Buy Up Dental Plan, offering a $2,250 calendar-year maximum benefit per individual.",
+        eligibility:
+          eligibilityFullTimeAca,
+        note: "",
+        plans: [],
+        link:
+          "https://unteked.sharepoint.com/sites/UnitekLearning/Human%20Resources/Forms/AllItems.aspx?id=%2Fsites%2FUnitekLearning%2FHuman%20Resources%2FBenefits%2FAetna%20Dental%2FAetna%20Dental%20PPO%20%2D%20Buy%20Up%20Plan%2Epdf&parent=%2Fsites%2FUnitekLearning%2FHuman%20Resources%2FBenefits%2FAetna%20Dental&p=true&ga=1"
+      },
+
+      "ameritas-dental": {
+        label: "Ameritas Dental - A New Choice Network Plan",
+        eyebrow: "DENTAL COVERAGE FOR PART-TIME EMPLOYEES",
+        story: "Support for Your Dental Care Needs",
+        name: "Ameritas Dental - A New Choice Network Plan",
+        description:
+          "Explore the Ameritas Dental - A New Choice Network Plan, offering a $1,000 calendar-year maximum benefit per individual.",
+        eligibility:
+          "Regular Part-Time",
+        note: "",
+        plans: [],
+        link:
+          "https://unteked.sharepoint.com/sites/UnitekLearning/Human%20Resources/Forms/AllItems.aspx?id=%2Fsites%2FUnitekLearning%2FHuman%20Resources%2FBenefits%2FBenefits%20for%20Part%2DTime%20Colleagues%2FBenefits%20for%20Part%20Time%20Employees%2Epdf&parent=%2Fsites%2FUnitekLearning%2FHuman%20Resources%2FBenefits%2FBenefits%20for%20Part%2DTime%20Colleagues&p=true&ga=1"
+      },
+
+      "vsp": {
+        label: "VSP",
+        eyebrow: "SUPPORT YOUR VISION CARE",
+        story: "Keep Your Vision in Focus",
+        name: "VSP",
+        description:
+          "Access vision coverage through VSP using the VSP Network.",
+        eligibility:
+          eligibilityFullTimeAca,
+        note: "",
+        plans: [],
+        link:
+          "https://unteked.sharepoint.com/sites/UnitekLearning/Human%20Resources/Forms/AllItems.aspx?id=%2Fsites%2FUnitekLearning%2FHuman%20Resources%2FBenefits%2FVSP%20Vision%2FVSP%20Benefit%20Information%2FVSP%20Benefit%20Summary%2Epdf&parent=%2Fsites%2FUnitekLearning%2FHuman%20Resources%2FBenefits%2FVSP%20Vision%2FVSP%20Benefit%20Information&p=true&ga=1"
+      },
+
+      "ameritas-vision": {
+        label: "Ameritas Vision - VSP",
+        eyebrow: "VISION COVERAGE FOR PART-TIME EMPLOYEES",
+        story: "Support for Your Vision Care",
+        name: "Ameritas Vision - VSP",
+        description:
+          "Access vision coverage through the VSP Choice Network.",
+        eligibility:
+          "Regular Part-Time",
+        note: "",
+        plans: [],
+        link:
+          "https://unteked.sharepoint.com/sites/UnitekLearning/Human%20Resources/Forms/AllItems.aspx?id=%2Fsites%2FUnitekLearning%2FHuman%20Resources%2FBenefits%2FBenefits%20for%20Part%2DTime%20Colleagues%2FBenefits%20for%20Part%20Time%20Employees%2Epdf&parent=%2Fsites%2FUnitekLearning%2FHuman%20Resources%2FBenefits%2FBenefits%20for%20Part%2DTime%20Colleagues&p=true&ga=1"
+      },
+
+      "basic-life": {
+        label: "Company Paid Basic Life AD&D",
+        eyebrow: "PROTECTION PROVIDED BY UNITEK",
+        story: "A Foundation of Financial Protection",
+        name: "Company Paid Basic Life AD&D",
+        description:
+          "Unitek provides Group Term Life Insurance coverage at one times your annual salary, administered by Voya.",
+        eligibility:
+          "Regular Full-Time",
+        note: "",
+        plans: [],
+        link:
+          "https://unteked.sharepoint.com/sites/UnitekLearning/Human%20Resources/Forms/AllItems.aspx?id=%2Fsites%2FUnitekLearning%2FHuman%20Resources%2FBenefits%2FVoya%20Programs%20Life%5FADD%5Fsupplemental%20programs%2FUnitek%20Learning%20Education%20Corp%5FVoya%20Life%5F1%2E2025%2Epdf&parent=%2Fsites%2FUnitekLearning%2FHuman%20Resources%2FBenefits%2FVoya%20Programs%20Life%5FADD%5Fsupplemental%20programs&p=true&ga=1"
+      },
+
+      "long-term-disability": {
+        label: "Company Paid Long Term Disability",
+        eyebrow: "PROTECTION PROVIDED BY UNITEK",
+        story: "Support When You Are Unable to Work Long Term",
+        name: "Company Paid Long Term Disability",
+        description:
+          "Unitek provides Long Term Disability coverage administered by Voya.",
+        eligibility:
+          "Regular Full-Time",
+        note: "",
+        plans: [],
+        link:
+          "https://unteked.sharepoint.com/sites/UnitekLearning/Human%20Resources/Forms/AllItems.aspx?id=%2Fsites%2FUnitekLearning%2FHuman%20Resources%2FBenefits%2FVoya%20Programs%20Life%5FADD%5Fsupplemental%20programs%2FUnitek%20Learning%20Education%20Corp%5FVoya%20LTD%201%2E2025%2Epdf&parent=%2Fsites%2FUnitekLearning%2FHuman%20Resources%2FBenefits%2FVoya%20Programs%20Life%5FADD%5Fsupplemental%20programs&p=true&ga=1"
+      },
+
+      "short-term-disability": {
+        label: "Short Term Disability",
+        eyebrow: "PREPARE FOR THE UNEXPECTED",
+        story: "Support During a Short-Term Disability",
+        name: "Short Term Disability",
+        description:
+          "Explore voluntary Short Term Disability coverage administered by Voya.",
+        eligibility:
+          "Regular Full-Time",
+        note: "",
+        plans: [],
+        link:
+          "https://unteked.sharepoint.com/sites/UnitekLearning/Human%20Resources/Forms/AllItems.aspx?id=%2Fsites%2FUnitekLearning%2FHuman%20Resources%2FBenefits%2FVoya%20Programs%20Life%5FADD%5Fsupplemental%20programs%2FUnitek%20Learning%20Education%20Corp%5FVoya%20STD%20Statutory%5F1%2E2025%2Epdf&parent=%2Fsites%2FUnitekLearning%2FHuman%20Resources%2FBenefits%2FVoya%20Programs%20Life%5FADD%5Fsupplemental%20programs&p=true&ga=1"
+      },
+
+      "supplemental-life-options": {
+        label: "Supplemental Life & AD&D Options",
+        eyebrow: "ADD TO YOUR LIFE INSURANCE COVERAGE",
+        story: "Explore Additional Life Insurance Options",
+        name: "Supplemental Life & AD&D Options",
+        description:
+          "Explore voluntary Supplemental Life and AD&D coverage, with additional coverage options available for an eligible spouse and child. These benefits are administered by Voya.",
+        eligibility:
+          "Regular Full-Time",
+        note:
+          "Enrollment in voluntary Supplemental Life coverage is required before enrolling in Spouse Life and AD&D or Child Life coverage.",
+        plans: [
+          "Supplemental Life & AD&D",
+          "Spouse Life & AD&D",
+          "Child Life"
+        ],
+        link:
+          "https://unteked.sharepoint.com/sites/UnitekLearning/Human%20Resources/Forms/AllItems.aspx?id=%2Fsites%2FUnitekLearning%2FHuman%20Resources%2FBenefits%2FVoya%20Programs%20Life%5FADD%5Fsupplemental%20programs%2FSupplemental%20Life%2Epdf&parent=%2Fsites%2FUnitekLearning%2FHuman%20Resources%2FBenefits%2FVoya%20Programs%20Life%5FADD%5Fsupplemental%20programs&p=true&ga=1"
+      },
+
+      "critical-illness": {
+        label: "Critical Illness",
+        eyebrow: "ADD ANOTHER LAYER OF PROTECTION",
+        story: "Support When a Critical Illness Occurs",
+        name: "Critical Illness",
+        description:
+          "Receive a lump-sum cash benefit if you are diagnosed with a covered critical illness. This voluntary benefit is administered by Aetna.",
+        eligibility:
+          "Regular Full-Time",
+        note: "",
+        plans: [],
+        link:
+          "https://unteked.sharepoint.com/sites/UnitekLearning/Human%20Resources/Forms/AllItems.aspx?id=%2Fsites%2FUnitekLearning%2FHuman%20Resources%2FBenefits%2FAetna%20Voluntary%20Programs%2FAetna%20Vol%5FCritical%20Illness%20Brochure%2Epdf&parent=%2Fsites%2FUnitekLearning%2FHuman%20Resources%2FBenefits%2FAetna%20Voluntary%20Programs&p=true&ga=1"
+      },
+
+      "hospital-indemnity": {
+        label: "Hospital Indemnity",
+        eyebrow: "ADD ANOTHER LAYER OF PROTECTION",
+        story: "Financial Support During a Covered Hospital Stay",
+        name: "Hospital Indemnity",
+        description:
+          "Receive a cash benefit paid directly to you when you are admitted to or confined in a hospital due to a covered illness or injury. This voluntary benefit is administered by Aetna.",
+        eligibility:
+          "Regular Full-Time",
+        note: "",
+        plans: [],
+        link:
+          "https://unteked.sharepoint.com/sites/UnitekLearning/Human%20Resources/Forms/AllItems.aspx?id=%2Fsites%2FUnitekLearning%2FHuman%20Resources%2FBenefits%2FAetna%20Voluntary%20Programs%2FAetna%20Vol%5FHospital%20Indemnity%20Brochure%2Epdf&parent=%2Fsites%2FUnitekLearning%2FHuman%20Resources%2FBenefits%2FAetna%20Voluntary%20Programs&p=true&ga=1"
+      },
+
+      "accident-insurance": {
+        label: "Accident Insurance",
+        eyebrow: "PREPARE FOR THE UNEXPECTED",
+        story: "Additional Support After a Covered Accident",
+        name: "Accident Insurance",
+        description:
+          "Receive lump-sum cash benefits for covered accidents and treatments. This voluntary benefit is administered by Aetna.",
+        eligibility:
+          "Regular Full-Time",
+        note: "",
+        plans: [],
+        link:
+          "https://unteked.sharepoint.com/sites/UnitekLearning/Human%20Resources/Forms/AllItems.aspx?id=%2Fsites%2FUnitekLearning%2FHuman%20Resources%2FBenefits%2FAetna%20Voluntary%20Programs%2FAetna%20Vol%5FAccident%20Brochure%2Epdf&parent=%2Fsites%2FUnitekLearning%2FHuman%20Resources%2FBenefits%2FAetna%20Voluntary%20Programs&p=true&ga=1"
+      }
+    };
+
+  const embeddedCoreHome = document.getElementById("embeddedCoreHome");
+  const embeddedCoreCategoryView = document.getElementById("embeddedCoreCategoryView");
+  const embeddedCoreDetail = document.getElementById("embeddedCoreDetail");
+  const embeddedCoreCategoryTitle = document.getElementById("embeddedCoreCategoryTitle");
+  const embeddedCoreCategoryIntro = document.getElementById("embeddedCoreCategoryIntro");
+  const embeddedCoreBenefitMenu = document.getElementById("embeddedCoreBenefitMenu");
+  const embeddedCoreDetailCard = document.getElementById("embeddedCoreDetailCard");
+  const embeddedBackToCore = document.getElementById("embeddedBackToCore");
+  const embeddedBackToCategory = document.getElementById("embeddedBackToCategory");
+  let embeddedActiveCoreCategory = "";
+
+  function resetEmbeddedCore() {
+    if (!embeddedCoreHome) return;
+    embeddedCoreDetail.classList.remove("visible");
+    embeddedCoreCategoryView.classList.remove("visible");
+    embeddedCoreHome.style.display = "block";
+    embeddedActiveCoreCategory = "";
+  }
+
+  function showEmbeddedCoreCategory(categoryKey) {
+    const category = embeddedCoreCategoryContent[categoryKey];
+    if (!category) return;
+
+    embeddedActiveCoreCategory = categoryKey;
+    embeddedCoreHome.style.display = "none";
+    embeddedCoreDetail.classList.remove("visible");
+    embeddedCoreCategoryView.classList.add("visible");
+
+    embeddedCoreCategoryTitle.textContent = category.title;
+    embeddedCoreCategoryIntro.textContent = category.intro;
+    embeddedCoreBenefitMenu.innerHTML = "";
+
+    category.benefits.forEach(benefitKey => {
+      const benefit = embeddedCoreBenefitContent[benefitKey];
+      if (!benefit) return;
+
+      const button = document.createElement("button");
+      button.className = "benefit-option is-demo";
+      button.type = "button";
+      button.innerHTML = `
+        <span class="option-icon"><span aria-hidden="true">›</span></span>
+        <span>${benefit.label}</span>
+      `;
+      button.addEventListener("click", () => showEmbeddedCoreDetail(benefitKey));
+      embeddedCoreBenefitMenu.appendChild(button);
+    });
+  }
+
+  function showEmbeddedCoreDetail(key) {
+    const content = embeddedCoreBenefitContent[key];
+    const category = embeddedCoreCategoryContent[embeddedActiveCoreCategory];
+    if (!content || !category) return;
+
+    const plansMarkup =
+      content.plans && content.plans.length
+        ? `
+          <div class="plans-available">
+            <strong>${key === "part-time-medical" ? "Plans Available" : "Coverage Options"}</strong>
+            <ul>${content.plans.map(plan => `<li>${plan}</li>`).join("")}</ul>
+          </div>
+        `
+        : "";
+
+    const noteMarkup =
+      content.note
+        ? `
+          <div class="important-note">
+            <strong>Important to Know</strong>
+            ${content.note}
+          </div>
+        `
+        : "";
+
+    embeddedCoreDetailCard.innerHTML = `
+      <div class="detail-eyebrow">${content.eyebrow}</div>
+      <h2>${content.story}</h2>
+      <div class="detail-benefit-name">${content.name}</div>
+      <p class="detail-description">${content.description}</p>
+      ${plansMarkup}
+      <div class="eligibility">
+        <span class="eligibility-label">Eligibility</span>
+        <span class="eligibility-values">${content.eligibility}</span>
+      </div>
+      ${noteMarkup}
+      <a class="learn-more" href="${content.link}" target="_blank" rel="noopener noreferrer">
+        Learn More <span aria-hidden="true">›</span>
+      </a>
+    `;
+
+    embeddedCoreCategoryView.classList.remove("visible");
+    embeddedCoreDetail.classList.add("visible");
+    embeddedBackToCategory.textContent = `← Back to ${category.title}`;
+  }
+
+  document.querySelectorAll(".embedded-core-category").forEach(button => {
+    button.addEventListener("click", () => showEmbeddedCoreCategory(button.dataset.coreCategory));
+  });
+
+  embeddedBackToCore?.addEventListener("click", resetEmbeddedCore);
+  embeddedBackToCategory?.addEventListener("click", () => {
+    showEmbeddedCoreCategory(embeddedActiveCoreCategory);
+  });
+
+  function openEmbeddedCoreBenefit(benefitKey) {
+    let categoryKey = "";
+    Object.entries(embeddedCoreCategoryContent).some(([key, category]) => {
+      if (category.benefits.includes(benefitKey)) {
+        categoryKey = key;
+        return true;
+      }
+      return false;
+    });
+
+    openCategory("core");
+    if (categoryKey) {
+      showEmbeddedCoreCategory(categoryKey);
+      showEmbeddedCoreDetail(benefitKey);
+    }
+  }
+
+
+
+  const eligibilityAll =
+    'Regular Full-Time<span class="eligibility-divider">|</span>Regular Part-Time<span class="eligibility-divider">|</span>Per Diem / Assignment<span class="eligibility-divider">|</span>Affordable Care Act Medical Eligible';
+
+  const prosperityEmbeddedBenefitContent = {
+
+      "health-savings": {
+        eyebrow: "MANAGE HEALTHCARE EXPENSES",
+        story: "Plan Ahead for Your Healthcare Needs",
+        name: "Health Savings Account",
+        description:
+          "A Health Savings Account gives you a way to prepare for eligible healthcare expenses today and in the future. Unitek also contributes for employees enrolled in the Health Savings Account.",
+        eligibility:
+          'Regular Full-Time<span class="eligibility-divider">|</span>Affordable Care Act Medical Eligible',
+        note:
+          "You must be enrolled in the High Deductible Health Plan (HDHP) to enroll in the Health Savings Account.",
+        link:
+          "https://unteked.sharepoint.com/sites/UnitekLearning/Human%20Resources/Forms/AllItems.aspx?id=%2Fsites%2FUnitekLearning%2FHuman%20Resources%2FBenefits%2FFinancial%20Wellness%2FHSA%20FSA%20Programs%2FHSA%2DEmployee%2DHandout%5FW013%2Epdf&parent=%2Fsites%2FUnitekLearning%2FHuman%20Resources%2FBenefits%2FFinancial%20Wellness%2FHSA%20FSA%20Programs&p=true&ga=1"
+      },
+
+      "401k": {
+        eyebrow: "PLAN FOR YOUR FUTURE",
+        story: "Build Toward What Comes Next",
+        name: "401(k) Retirement Plan",
+        description:
+          "Your Unitek 401(k) Plan can help you build toward the retirement you envision. Unitek matches $0.50 for every dollar you contribute, up to 6%.",
+        eligibility:
+          'Regular Full-Time<span class="eligibility-divider">|</span>Regular Part-Time<span class="eligibility-divider">|</span>Per Diem / Assignment<span class="eligibility-divider">|</span>Affordable Care Act Medical Eligible',
+        note:
+          "",
+        link:
+          "https://unteked.sharepoint.com/sites/UnitekLearning/Human%20Resources/Forms/AllItems.aspx?id=%2Fsites%2FUnitekLearning%2FHuman%20Resources%2FBenefits%2FFinancial%20Wellness%2F401K%2FEMPOWER%2D%20401k%20Retirement%20Savings%2FUnitek%20401K%20Enrollment%20Guide%2Epdf&parent=%2Fsites%2FUnitekLearning%2FHuman%20Resources%2FBenefits%2FFinancial%20Wellness%2F401K%2FEMPOWER%2D%20401k%20Retirement%20Savings&p=true&ga=1"
+      },
+
+      "fsa": {
+        eyebrow: "MANAGE HEALTHCARE EXPENSES",
+        story: "Set Aside Funds for Eligible Healthcare Costs",
+        name: "Flexible Spending Account",
+        description:
+          "Set aside funds to help cover eligible medical, dental, and vision expenses.",
+        eligibility:
+          'Regular Full-Time<span class="eligibility-divider">|</span>Affordable Care Act Medical Eligible',
+        note:
+          "Cannot be used in conjunction with a Health Savings Account.",
+        link:
+          "https://unteked.sharepoint.com/sites/UnitekLearning/Human%20Resources/Forms/AllItems.aspx?id=%2Fsites%2FUnitekLearning%2FHuman%20Resources%2FBenefits%2FFinancial%20Wellness%2FHSA%20FSA%20Programs%2FMedical%5FFSA%5FEmployee%5FHandout%5F22%2Epdf&parent=%2Fsites%2FUnitekLearning%2FHuman%20Resources%2FBenefits%2FFinancial%20Wellness%2FHSA%20FSA%20Programs&p=true&ga=1"
+      },
+
+      "limited-fsa": {
+        eyebrow: "PLAN FOR DENTAL & VISION COSTS",
+        story: "Save for the Care You Need",
+        name: "Limited Flexible Spending Account",
+        description:
+          "Set aside funds to help cover eligible dental and vision expenses.",
+        eligibility:
+          'Regular Full-Time<span class="eligibility-divider">|</span>Affordable Care Act Medical Eligible',
+        note:
+          "Can be used in conjunction with a Health Savings Account.",
+        link:
+          "https://unteked.sharepoint.com/sites/UnitekLearning/Human%20Resources/Forms/AllItems.aspx?id=%2Fsites%2FUnitekLearning%2FHuman%20Resources%2FBenefits%2FFinancial%20Wellness%2FHSA%20FSA%20Programs%2FLimited%2DFSA%2DEmployee%2DHandout%2Epdf&parent=%2Fsites%2FUnitekLearning%2FHuman%20Resources%2FBenefits%2FFinancial%20Wellness%2FHSA%20FSA%20Programs&p=true&ga=1"
+      },
+
+      "dependent-care": {
+        eyebrow: "SUPPORT THOSE WHO DEPEND ON YOU",
+        story: "Plan for Dependent Care Expenses",
+        name: "Dependent Care Flexible Spending Account",
+        description:
+          "Set aside funds to help cover eligible daycare or elder care expenses.",
+        eligibility:
+          'Regular Full-Time<span class="eligibility-divider">|</span>Regular Part-Time',
+        note:
+          "",
+        link:
+          "https://unteked.sharepoint.com/sites/UnitekLearning/Human%20Resources/Forms/AllItems.aspx?id=%2Fsites%2FUnitekLearning%2FHuman%20Resources%2FBenefits%2FFinancial%20Wellness%2FHSA%20FSA%20Programs%2FDCA%2DHandout%2DUpdated%2D2026%2Epdf&parent=%2Fsites%2FUnitekLearning%2FHuman%20Resources%2FBenefits%2FFinancial%20Wellness%2FHSA%20FSA%20Programs&p=true&ga=1"
+      },
+
+      "commuter": {
+        eyebrow: "MAKE YOUR COMMUTE WORK FOR YOU",
+        story: "Plan for the Cost of Getting There",
+        name: "Commuter Benefits Program",
+        description:
+          "Set aside funds to help cover eligible parking and public transportation expenses.",
+        eligibility:
+          "Regular Full-Time",
+        note:
+          "",
+        link:
+          "https://unteked.sharepoint.com/sites/UnitekLearning/Human%20Resources/Forms/AllItems.aspx?id=%2Fsites%2FUnitekLearning%2FHuman%20Resources%2FBenefits%2FFinancial%20Wellness%2FHSA%20FSA%20Programs%2FCommuter%20benefits%20eligible%20expenses%2Epdf&parent=%2Fsites%2FUnitekLearning%2FHuman%20Resources%2FBenefits%2FFinancial%20Wellness%2FHSA%20FSA%20Programs&p=true&ga=1"
+      },
+
+      "benefithub": {
+        eyebrow: "SAVE ON EVERYDAY EXPERIENCES",
+        story: "Make More of the Moments You Enjoy",
+        name: "BenefitHub Discounts & Savings",
+        description:
+          "Access discounts on travel, hotels, theme parks, tickets, electronics, and more.",
+        eligibility:
+          'Regular Full-Time<span class="eligibility-divider">|</span>Regular Part-Time<span class="eligibility-divider">|</span>Per Diem / Assignment<span class="eligibility-divider">|</span>Affordable Care Act Medical Eligible',
+        note:
+          "",
+        link:
+          "https://unteked.sharepoint.com/sites/UnitekLearning/Human%20Resources/Forms/AllItems.aspx?id=%2Fsites%2FUnitekLearning%2FHuman%20Resources%2FBenefits%2FFinancial%20Wellness%2FBenefit%20Hub%20Discounts%2FBenefit%20Hub%20Flyer%2Epdf&parent=%2Fsites%2FUnitekLearning%2FHuman%20Resources%2FBenefits%2FFinancial%20Wellness%2FBenefit%20Hub%20Discounts&p=true&ga=1"
+      },
+
+      "lifemart": {
+        eyebrow: "FIND MORE WAYS TO SAVE",
+        story: "Save on the Things You Use and Enjoy",
+        name: "LifeMart Discounts & Savings",
+        description:
+          "Access discounts on hotels, travel, electronics, and more.",
+        eligibility:
+          'Regular Full-Time<span class="eligibility-divider">|</span>Regular Part-Time<span class="eligibility-divider">|</span>Per Diem / Assignment<span class="eligibility-divider">|</span>Affordable Care Act Medical Eligible',
+        note:
+          "",
+        link:
+          "https://unteked.sharepoint.com/sites/UnitekLearning/Human%20Resources/Forms/AllItems.aspx?id=%2Fsites%2FUnitekLearning%2FHuman%20Resources%2FBenefits%2FFinancial%20Wellness%2FBenefit%20Hub%20Discounts%2FBenefit%20Hub%20Flyer%2Epdf&parent=%2Fsites%2FUnitekLearning%2FHuman%20Resources%2FBenefits%2FFinancial%20Wellness%2FBenefit%20Hub%20Discounts&p=true&ga=1"
+      },
+
+      "pet": {
+        eyebrow: "CARE FOR YOUR PETS",
+        story: "Protection for the Pets You Love",
+        name: "Pet Insurance",
+        description:
+          "Explore voluntary pet insurance available through ASPCA®.",
+        eligibility:
+          'Regular Full-Time<span class="eligibility-divider">|</span>Regular Part-Time<span class="eligibility-divider">|</span>Per Diem / Assignment<span class="eligibility-divider">|</span>Affordable Care Act Medical Eligible',
+        note:
+          "",
+        link:
+          "https://unteked.sharepoint.com/sites/UnitekLearning/Human%20Resources/Forms/AllItems.aspx?id=%2Fsites%2FUnitekLearning%2FHuman%20Resources%2FBenefits%2FFinancial%20Wellness%2FUnitek%20ASPCA%20Vet%20Costs%2Epdf&parent=%2Fsites%2FUnitekLearning%2FHuman%20Resources%2FBenefits%2FFinancial%20Wellness&p=true&ga=1"
+      }
+
+    };
+  const wellbeingEmbeddedBenefitContent = {
+
+      "thrive": {
+        eyebrow: "BUILD HEALTHY HABITS",
+        story: "Take an Active Role in Your Wellbeing",
+        name: "Unitek Thrive Wellness",
+        description:
+          "A physical and mental wellbeing platform with challenges, resources, and activities designed to help you work toward your wellness goals.",
+        eligibility:
+          'Regular Full-Time<span class="eligibility-divider">|</span>Regular Part-Time<span class="eligibility-divider">|</span>Per Diem / Assignment<span class="eligibility-divider">|</span>Affordable Care Act Medical Eligible',
+        link:
+          "https://unteked.sharepoint.com/sites/UnitekLearning/Human%20Resources/Forms/AllItems.aspx?id=%2Fsites%2FUnitekLearning%2FHuman%20Resources%2FBenefits%2FMental%20Wellbeing%2F2025%20Portal%20Flyer%20%2D%20Unitek%20Learning%2Epdf&parent=%2Fsites%2FUnitekLearning%2FHuman%20Resources%2FBenefits%2FMental%20Wellbeing&p=true&ga=1"
+      },
+
+      "calm": {
+        eyebrow: "SUPPORT YOUR MENTAL WELLBEING",
+        story: "Find Support That Meets You Where You Are",
+        name: "Calm Health App",
+        description:
+          "Access easy-to-use mental health support designed to meet you where you are and guide you toward greater mental, emotional, and physical wellbeing.",
+        eligibility:
+          'Regular Full-Time<span class="eligibility-divider">|</span>Affordable Care Act Medical Eligible',
+        link:
+          "https://unteked.sharepoint.com/:w:/s/UnitekLearning/IQCfjPryEVOlRKYDsKbPK3wDASF155cCO7lHcHDgBLItnXE?e=oUREHi&wdLOR=cC1F2A71B-E7FE-4DFB-BCC6-CC8BF9BD2C53"
+      }
+
+    };
+  const advancementEmbeddedBenefitContent = {
+
+      "pathways": {
+        eyebrow: "CONTINUE YOUR EDUCATION",
+        story: "Create a Path Toward What Comes Next",
+        name: "Educational Pathways",
+        description:
+          "Through structured educational pathways, you can pursue higher degrees and expand your expertise without putting your career on hold.",
+        eligibility:
+          "Regular Full-Time",
+        link:
+          "https://www.uniteklearning.com/wp-content/uploads/2026/06/EducationalPathways.pdf"
+      },
+
+      "tuition": {
+        eyebrow: "INVEST IN YOUR EDUCATION",
+        story: "Open the Door to New Opportunities",
+        name: "Tuition Assistance Program",
+        description:
+          "The Tuition Assistance Program helps you and your eligible family members pursue education that opens doors to new opportunities by reimbursing tuition costs.",
+        eligibility:
+          "Regular Full-Time",
+        link:
+          "https://www.uniteklearning.com/wp-content/uploads/2026/06/UL_HR_EmployeeTuition_Flyer_8.5x11_20250818-PRINT.pdf"
+      }
+
+    };
+  const supportEmbeddedBenefitContent = {
+
+      "eap": {
+        eyebrow: "SUPPORT FOR EVERYDAY LIFE",
+        story: "Find Support for Life’s Challenges",
+        name: "TELUS Employee Assistance Program",
+        description:
+          "Access support for emotional wellbeing and everyday life events, including legal and financial consultation, child and eldercare support, community referrals, self-guided CBT programs, life coaching, online counseling scheduling and chat, and more.",
+        eligibility:
+          eligibilityAll,
+        link:
+          "https://unteked.sharepoint.com/sites/UnitekLearning/Human%20Resources/Forms/AllItems.aspx?id=%2Fsites%2FUnitekLearning%2FHuman%20Resources%2FBenefits%2FMental%20Wellbeing%2FEAP%20%2D%20Employee%20Assistance%20Program%2FIntroduction%20to%20new%20EAP%20slides%5FVoya%5FJuly%201%2Epptx%5B94%5D%5B62%5D%2Epdf&parent=%2Fsites%2FUnitekLearning%2FHuman%20Resources%2FBenefits%2FMental%20Wellbeing%2FEAP%20%2D%20Employee%20Assistance%20Program&p=true&ga=1",
+        accessLink:
+          "https://unteked.sharepoint.com/sites/UnitekLearning/Human%20Resources/Forms/AllItems.aspx?id=%2Fsites%2FUnitekLearning%2FHuman%20Resources%2FBenefits%2FMental%20Wellbeing%2FEAP%20%2D%20Employee%20Assistance%20Program%2FUnitek%20TELUS%20Employee%20Assistance%20Program%20%28EAP%29%20Flyer%20%2D%20Employee%2EPDF&parent=%2Fsites%2FUnitekLearning%2FHuman%20Resources%2FBenefits%2FMental%20Wellbeing%2FEAP%20%2D%20Employee%20Assistance%20Program&p=true&ga=1"
+      },
+
+      "crisis": {
+        eyebrow: "SUPPORT WHEN THE UNEXPECTED HAPPENS",
+        story: "Help When Your Team Needs It Most",
+        name: "Critical Incident Community Crisis Line",
+        description:
+          "Access immediate, coordinated assistance designed to support recovery and a return to stability following events such as natural disasters, workplace accidents, sudden loss, acts of violence, or other incidents that disrupt your team.",
+        eligibility:
+          eligibilityAll,
+        link:
+          "https://unteked.sharepoint.com/sites/UnitekLearning/Human%20Resources/Forms/AllItems.aspx?id=%2Fsites%2FUnitekLearning%2FHuman%20Resources%2FBenefits%2FMental%20Wellbeing%2FEAP%20%2D%20Employee%20Assistance%20Program%2FTELUS%20Health%20Critical%20Incident%20Support%20Flyer%2EPDF&parent=%2Fsites%2FUnitekLearning%2FHuman%20Resources%2FBenefits%2FMental%20Wellbeing%2FEAP%20%2D%20Employee%20Assistance%20Program&p=true&ga=1"
+      },
+
+      "empathy": {
+        eyebrow: "SUPPORT THROUGH LOSS",
+        story: "Guidance During Difficult Moments",
+        name: "Empathy Support",
+        description:
+          "Access bereavement support for you and your loved ones, including funeral planning and will preparation services.",
+        eligibility:
+          eligibilityAll,
+        link:
+          "https://unteked.sharepoint.com/sites/UnitekLearning/Human%20Resources/Forms/AllItems.aspx?id=%2Fsites%2FUnitekLearning%2FHuman%20Resources%2FBenefits%2FMental%20Wellbeing%2FEAP%20%2D%20Employee%20Assistance%20Program%2FEmpathy%20Employee%20and%20Beneficiary%20Flyer%288%29%2EPDF&parent=%2Fsites%2FUnitekLearning%2FHuman%20Resources%2FBenefits%2FMental%20Wellbeing%2FEAP%20%2D%20Employee%20Assistance%20Program&p=true&ga=1"
+      },
+
+      "voya": {
+        eyebrow: "PLAN WITH THE FUTURE IN MIND",
+        story: "Support for Planning Around Special Needs",
+        name: "Voya Cares",
+        description:
+          "Access resources to help you plan for loved ones with special needs, including information about government benefits, beneficiary planning, employee benefits, and how those benefits may interact.",
+        eligibility:
+          eligibilityAll,
+        link:
+          "https://unteked.sharepoint.com/sites/UnitekLearning/Human%20Resources/Forms/AllItems.aspx?id=%2Fsites%2FUnitekLearning%2FHuman%20Resources%2FBenefits%2FMental%20Wellbeing%2FEAP%20%2D%20Employee%20Assistance%20Program%2FVoya%20Cares%20Employee%20Flyer%2EPDF&parent=%2Fsites%2FUnitekLearning%2FHuman%20Resources%2FBenefits%2FMental%20Wellbeing%2FEAP%20%2D%20Employee%20Assistance%20Program&p=true&ga=1"
+      },
+
+      "medicare": {
+        eyebrow: "NAVIGATE YOUR NEXT STEP",
+        story: "Guidance for the Transition to Medicare",
+        name: "Medicare Consulting Services",
+        description:
+          "Access consulting support through MarshMcClellan Agency for Unitek associates and/or their spouses who are Medicare eligible or approaching eligibility and are interested in transitioning to a Medicare plan.",
+        eligibility:
+          eligibilityAll,
+        link:
+          "https://unteked.sharepoint.com/sites/UnitekLearning/Human%20Resources/Forms/AllItems.aspx?id=%2Fsites%2FUnitekLearning%2FHuman%20Resources%2FBenefits%2FFinancial%20Wellness%2FMedicare%20Consulting%20Services%2Epdf&parent=%2Fsites%2FUnitekLearning%2FHuman%20Resources%2FBenefits%2FFinancial%20Wellness&p=true&ga=1"
+      },
+
+      "travel": {
+        eyebrow: "SUPPORT WHILE YOU ARE AWAY",
+        story: "Assistance When Travel Takes You Farther From Home",
+        name: "Travel Assistance Program",
+        description:
+          "Access travel support when traveling 100 miles or more from your primary residence, including emergency medical transport, medical assistance, travel assistance, and security assistance services.",
+        eligibility:
+          eligibilityAll,
+        link:
+          "https://unteked.sharepoint.com/sites/UnitekLearning/Human%20Resources/Forms/AllItems.aspx?id=%2Fsites%2FUnitekLearning%2FHuman%20Resources%2FBenefits%2FMental%20Wellbeing%2FEAP%20%2D%20Employee%20Assistance%20Program%2FVoya%20Travel%20Assistance%20Wallet%20Card%2834%29%2EPDF&parent=%2Fsites%2FUnitekLearning%2FHuman%20Resources%2FBenefits%2FMental%20Wellbeing%2FEAP%20%2D%20Employee%20Assistance%20Program&p=true&ga=1"
+      }
+
+    };
+
+  const embeddedSectionData = {
+    prosperity: prosperityEmbeddedBenefitContent,
+    wellbeing: wellbeingEmbeddedBenefitContent,
+    advancement: advancementEmbeddedBenefitContent,
+    support: supportEmbeddedBenefitContent
+  };
+
+  function getPanelForSection(sectionKey) {
+    return document.getElementById(sectionKey + "Panel");
+  }
+
+  async function showEmbeddedSectionDetail(sectionKey, benefitKey) {
+    const panel = getPanelForSection(sectionKey);
+    const detail = document.getElementById(sectionKey + "EmbeddedDetail");
+    const card = document.getElementById(sectionKey + "EmbeddedDetailCard");
+    let content = embeddedSectionData[sectionKey]?.[benefitKey];
+
+    // For Wellbeing only, fetch the live JSON at click time so the latest
+    // Microsoft List -> Power Automate -> GitHub update is always used.
+    if (sectionKey === "wellbeing" && content) {
+      try {
+        const response = await fetch('benefits-data.json?ts=' + Date.now(), { cache: 'no-store' });
+        if (response.ok) {
+          const loaded = await response.json();
+          const benefitsArray = Array.isArray(loaded)
+            ? loaded
+            : (Array.isArray(loaded.benefits) ? loaded.benefits : []);
+          const liveBenefit = benefitsArray.find(item =>
+            item.id === benefitKey &&
+            item.category === 'wellbeing' &&
+            item.active !== false
+          );
+
+          if (liveBenefit) {
+            const eligibilityItems = Array.isArray(liveBenefit.eligibility)
+              ? liveBenefit.eligibility
+              : String(liveBenefit.eligibility || "")
+                  .split("|")
+                  .map(value => value.trim())
+                  .filter(Boolean);
+
+            content = {
+              ...content,
+              story: liveBenefit.headline || content.story,
+              name: liveBenefit.name || content.name,
+              description: liveBenefit.description || content.description,
+              eligibility: eligibilityItems.length
+                ? eligibilityItems.join('<span class="eligibility-divider">|</span>')
+                : content.eligibility,
+              link: liveBenefit.learnMoreUrl || content.link,
+              accessLink: liveBenefit.howToAccessUrl || content.accessLink
+            };
+          }
+        }
+      } catch (error) {
+        console.error('Live Wellbeing benefit lookup:', error);
+      }
+    }
+
+    if (!panel || !detail || !card || !content) return;
+
+    const home = panel.querySelector(".category-home");
+    if (home) home.style.display = "none";
+    detail.classList.add("visible");
+
+    const noteMarkup = content.note
+      ? `<div class="important-note"><strong>Important to Know</strong>${content.note}</div>`
+      : "";
+
+    const buttons = [];
+    if (content.link) {
+      buttons.push(`<a class="learn-more" href="${content.link}" target="_blank" rel="noopener noreferrer">Learn More <span aria-hidden="true">›</span></a>`);
+    }
+    if (content.accessLink) {
+      buttons.push(`<a class="access-button" href="${content.accessLink}" target="_blank" rel="noopener noreferrer">How to Access <span aria-hidden="true">›</span></a>`);
+    }
+
+    card.innerHTML = `
+      <div class="detail-eyebrow">${content.eyebrow || ""}</div>
+      <h2>${content.story || ""}</h2>
+      <div class="detail-benefit-name">${content.name || ""}</div>
+      <p class="detail-description">${content.description || ""}</p>
+      <div class="eligibility">
+        <span class="eligibility-label">Eligibility</span>
+        <span class="eligibility-values">${content.eligibility || ""}</span>
+      </div>
+      ${noteMarkup}
+      <div class="button-row">${buttons.join("")}</div>
+    `;
+  }
+
+  function resetEmbeddedSection(sectionKey) {
+    const panel = getPanelForSection(sectionKey);
+    const detail = document.getElementById(sectionKey + "EmbeddedDetail");
+    if (!panel || !detail) return;
+    detail.classList.remove("visible");
+    const home = panel.querySelector(".category-home");
+    if (home) home.style.display = "block";
+  }
+
+  document.querySelectorAll(".embedded-section-benefit").forEach(button => {
+    button.addEventListener("click", () => {
+      const sectionKey = button.dataset.section;
+      const benefitKey = button.dataset.benefit;
+      resetEmbeddedSection(sectionKey);
+      showEmbeddedSectionDetail(sectionKey, benefitKey);
+    });
+  });
+
+  document.querySelectorAll("[data-back-section]").forEach(button => {
+    button.addEventListener("click", () => resetEmbeddedSection(button.dataset.backSection));
+  });
+
+
+  const benefitsSearchData = [
+    {
+      title: "Aetna PPO 2000",
+      category: "Core Benefits",
+      coreKey: "aetna-ppo-2000",
+      description: "Medical plan with a $2,000 deductible.",
+      url: "core-updated.html",
+      keywords: ["medical","aetna","ppo","2000","deductible","full time","aca","affordable care act","health coverage",
+        "ppo plan","medical insurance","health insurance","2000 deductible","aetna medical","doctor coverage","health plan","regular full time","full time medical"]
+    },
+    {
+      title: "Aetna HDHP 3400",
+      category: "Core Benefits",
+      coreKey: "aetna-hdhp-3400",
+      description: "High Deductible Health Plan that allows HSA participation.",
+      url: "core-updated.html",
+      keywords: ["medical","aetna","hdhp","3400","high deductible","hsa","health savings account","full time","aca","affordable care act",
+        "high deductible health plan","hsa eligible medical","hsa plan","medical insurance","health insurance","3400 deductible","aetna medical","regular full time","full time medical"]
+    },
+    {
+      title: "Aetna Deductible HMO (CA Only)",
+      category: "Core Benefits",
+      coreKey: "aetna-hmo-ca",
+      description: "Aetna HMO medical plan for eligible California employees.",
+      url: "core-updated.html",
+      keywords: ["medical","aetna","hmo","california","ca","full time","aca","affordable care act"]
+    },
+    {
+      title: "Aetna Deductible EPO",
+      category: "Core Benefits",
+      coreKey: "aetna-epo",
+      description: "Aetna EPO medical plan for eligible employees outside California.",
+      url: "core-updated.html",
+      keywords: ["medical","aetna","epo","outside california","all other states","full time","aca","affordable care act"]
+    },
+    {
+      title: "Kaiser Copay HMO Plan",
+      category: "Core Benefits",
+      coreKey: "kaiser-copay",
+      description: "Kaiser HMO medical plan for eligible California employees.",
+      url: "core-updated.html",
+      keywords: ["medical","kaiser","hmo","copay","california","ca","full time","aca"]
+    },
+    {
+      title: "Kaiser $1500 Deductible HMO Plan",
+      category: "Core Benefits",
+      coreKey: "kaiser-deductible",
+      description: "Kaiser deductible HMO medical plan for eligible California employees.",
+      url: "core-updated.html",
+      keywords: ["medical","kaiser","1500","deductible","hmo","california","ca","full time","aca"]
+    },
+    {
+      title: "Part-Time Medical Options",
+      category: "Core Benefits",
+      coreKey: "part-time-medical",
+      description: "Medical coverage options available to eligible Regular Part-Time employees.",
+      url: "core-updated.html",
+      keywords: ["medical","part time","regular part time","mec","apex","globe life","gli","minimum essential coverage","phcs",
+        "part time health insurance","part time medical insurance","part time benefits","medical for part time","health coverage part time","mec plan","minimum essential coverage","apex","globe life","gli","phcs limited benefit"]
+    },
+    {
+      title: "Aetna Core Dental Plan",
+      category: "Core Benefits",
+      coreKey: "aetna-core-dental",
+      description: "Dental coverage with a $1,250 calendar-year maximum benefit per individual.",
+      url: "core-updated.html",
+      keywords: ["dental","aetna","1250","full time","aca","teeth","oral health",
+        "dental insurance","dental coverage","teeth","dentist","1250 maximum","full time dental","oral care","oral health"]
+    },
+    {
+      title: "Aetna Buy Up Dental Plan",
+      category: "Core Benefits",
+      coreKey: "aetna-buy-up-dental",
+      description: "Dental coverage with a $2,250 calendar-year maximum benefit per individual.",
+      url: "core-updated.html",
+      keywords: ["dental","aetna","2250","buy up","full time","aca","teeth","oral health",
+        "dental insurance","dental coverage","teeth","dentist","2250 maximum","buy up dental","full time dental","oral care"]
+    },
+    {
+      title: "Ameritas Dental - A New Choice Network Plan",
+      category: "Core Benefits",
+      coreKey: "ameritas-dental",
+      description: "Dental coverage available to Regular Part-Time employees.",
+      url: "core-updated.html",
+      keywords: ["dental","ameritas","part time","regular part time","1000","a new choice","teeth",
+        "part time dental","dental for part time","dental insurance","dental coverage","ameritas dental","dentist","teeth"]
+    },
+    {
+      title: "VSP",
+      category: "Core Benefits",
+      coreKey: "vsp",
+      description: "Vision coverage through the VSP Network.",
+      url: "core-updated.html",
+      keywords: ["vision","vsp","eye","eyes","glasses","contacts","full time","aca",
+        "vision insurance","vision coverage","eye exam","eyeglasses","glasses","contacts","contact lenses","vsp network","full time vision"]
+    },
+    {
+      title: "Ameritas Vision - VSP",
+      category: "Core Benefits",
+      coreKey: "ameritas-vision",
+      description: "Vision coverage through the VSP Choice Network for Regular Part-Time employees.",
+      url: "core-updated.html",
+      keywords: ["vision","ameritas","vsp","part time","regular part time","eye","eyes","glasses","contacts",
+        "part time vision","vision for part time","vision insurance","eye exam","eyeglasses","glasses","contacts","vsp choice network"]
+    },
+    {
+      title: "Company Paid Basic Life AD&D",
+      category: "Core Benefits",
+      coreKey: "basic-life",
+      description: "Group Term Life Insurance coverage provided by Unitek and administered by Voya.",
+      url: "core-updated.html",
+      keywords: ["life insurance","life","ad&d","accidental death","voya","company paid","full time",
+        "basic life insurance","company paid life insurance","free life insurance","group term life","annual salary coverage","voya","financial protection","full time"]
+    },
+    {
+      title: "Company Paid Long Term Disability",
+      category: "Core Benefits",
+      coreKey: "long-term-disability",
+      description: "Long Term Disability coverage provided by Unitek and administered by Voya.",
+      url: "core-updated.html",
+      keywords: ["disability","long term disability","ltd","voya","company paid","full time","unable to work",
+        "long term disability","ltd","income protection","unable to work","disability coverage","company paid disability","voya","full time"]
+    },
+    {
+      title: "Short Term Disability",
+      category: "Core Benefits",
+      coreKey: "short-term-disability",
+      description: "Voluntary Short Term Disability coverage administered by Voya.",
+      url: "core-updated.html",
+      keywords: ["disability","short term disability","std","voya","full time","unable to work",
+        "short term disability","std","income protection","unable to work temporarily","voluntary disability","voya","full time"]
+    },
+    {
+      title: "Supplemental Life & AD&D Options",
+      category: "Core Benefits",
+      coreKey: "supplemental-life-options",
+      description: "Voluntary Supplemental Life and AD&D coverage with additional coverage options for an eligible spouse and child.",
+      url: "core-updated.html",
+      keywords: [
+        "supplemental life","supplemental life insurance","life insurance","additional life insurance",
+        "voluntary life","ad&d","accidental death","accidental death and dismemberment","voya",
+        "spouse life","spouse insurance","spouse coverage","partner coverage",
+        "child life","child insurance","children","family","dependent","dependents",
+        "extra protection","financial protection","full time","regular full time"
+      ]
+    },
+    {
+      title: "Critical Illness",
+      category: "Core Benefits",
+      coreKey: "critical-illness",
+      description: "Lump-sum cash benefit for a covered critical illness.",
+      url: "core-updated.html",
+      keywords: ["critical illness","illness","cash benefit","aetna","full time","supplemental protection",
+        "cancer","heart attack","stroke","critical diagnosis","serious illness","cash benefit","lump sum","supplemental insurance","aetna"]
+    },
+    {
+      title: "Hospital Indemnity",
+      category: "Core Benefits",
+      coreKey: "hospital-indemnity",
+      description: "Cash benefit for a covered hospital admission or confinement.",
+      url: "core-updated.html",
+      keywords: ["hospital","hospital stay","indemnity","cash benefit","aetna","full time",
+        "hospital stay","hospital admission","hospital cash","hospitalization","cash benefit","supplemental insurance","covered illness","covered injury","aetna"]
+    },
+    {
+      title: "Accident Insurance",
+      category: "Core Benefits",
+      coreKey: "accident-insurance",
+      description: "Lump-sum cash benefits for covered accidents and treatments.",
+      url: "core-updated.html",
+      keywords: ["accident","injury","cash benefit","aetna","full time","supplemental protection",
+        "accident coverage","injury","accidental injury","cash benefit","lump sum","supplemental insurance","treatment after accident","aetna"]
+    },
+
+    {
+      title: "Health Savings Account",
+      category: "My Prosperity",
+      sectionKey: "prosperity",
+      benefitKey: "health-savings",
+      description: "Prepare for eligible healthcare expenses today and in the future.",
+      url: "prosperity.html",
+      keywords: ["hsa","health savings account","healthcare expenses","medical expenses","save","savings","full time","aca","hdhp",
+        "save for healthcare","pay medical expenses","health expenses","medical savings","tax advantaged savings","healthcare savings","unitek contribution","employee contribution"]
+    },
+    {
+      title: "401(k) Retirement Plan",
+      category: "My Prosperity",
+      sectionKey: "prosperity",
+      benefitKey: "401k",
+      description: "Build toward retirement with an employer match.",
+      url: "prosperity.html",
+      keywords: ["401k","401(k)","retirement","future","savings","match","financial","full time","part time","per diem","aca",
+        "save for retirement","retirement savings","retirement plan","company match","employer match","401 k match","financial future","planning for retirement","invest for retirement"]
+    },
+    {
+      title: "Flexible Spending Account",
+      category: "My Prosperity",
+      sectionKey: "prosperity",
+      benefitKey: "fsa",
+      description: "Set aside funds for eligible medical, dental, and vision expenses.",
+      url: "prosperity.html",
+      keywords: ["fsa","flexible spending account","medical","dental","vision","healthcare expenses","full time","aca",
+        "pay for medical","pay for dental","pay for vision","health expenses","medical spending account","dental expenses","vision expenses","healthcare spending"]
+    },
+    {
+      title: "Limited Flexible Spending Account",
+      category: "My Prosperity",
+      sectionKey: "prosperity",
+      benefitKey: "limited-fsa",
+      description: "Set aside funds for eligible dental and vision expenses.",
+      url: "prosperity.html",
+      keywords: ["limited fsa","limited flexible spending account","dental","vision","hsa","full time","aca",
+        "dental expenses","vision expenses","use with hsa","compatible with hsa","limited purpose fsa","limited fsa","pay for dental","pay for vision"]
+    },
+    {
+      title: "Dependent Care Flexible Spending Account",
+      category: "My Prosperity",
+      sectionKey: "prosperity",
+      benefitKey: "dependent-care",
+      description: "Set aside funds for eligible daycare or elder care expenses.",
+      url: "prosperity.html",
+      keywords: ["dependent care","daycare","elder care","child care","family","fsa","full time","part time",
+        "day care","daycare","childcare","child care","elder care","eldercare","dependent expenses","care for parent","care for child","dependent care account"]
+    },
+    {
+      title: "Commuter Benefits Program",
+      category: "My Prosperity",
+      sectionKey: "prosperity",
+      benefitKey: "commuter",
+      description: "Set aside funds for eligible parking and public transportation expenses.",
+      url: "prosperity.html",
+      keywords: ["commuter","commute","parking","public transportation","transit","bus","train","full time",
+        "commuting","commute to work","parking benefit","parking expenses","public transit","transportation","bus fare","train fare","metro","subway","transit expenses"]
+    },
+    {
+      title: "BenefitHub Discounts & Savings",
+      category: "My Prosperity",
+      sectionKey: "prosperity",
+      benefitKey: "benefithub",
+      description: "Discounts on travel, hotels, theme parks, tickets, electronics, and more.",
+      url: "prosperity.html",
+      keywords: ["discounts","savings","perks","travel","hotels","theme parks","tickets","electronics","vacation","full time","part time","per diem","aca",
+        "employee discounts","employee perks","travel deals","hotel deals","theme park discounts","ticket discounts","electronics discounts","save money","vacation discounts","entertainment discounts"]
+    },
+    {
+      title: "LifeMart Discounts & Savings",
+      category: "My Prosperity",
+      sectionKey: "prosperity",
+      benefitKey: "lifemart",
+      description: "Discounts on hotels, travel, electronics, and more.",
+      url: "prosperity.html",
+      keywords: ["discounts","savings","perks","travel","hotels","electronics","vacation","full time","part time","per diem","aca",
+        "employee discounts","employee perks","travel deals","hotel deals","electronics discounts","save money","vacation discounts","shopping discounts","everyday savings"]
+    },
+    {
+      title: "Pet Insurance",
+      category: "My Prosperity",
+      sectionKey: "prosperity",
+      benefitKey: "pet",
+      description: "Voluntary pet insurance available through ASPCA®.",
+      url: "prosperity.html",
+      keywords: ["pet","pets","pet insurance","dog","cat","aspca","full time","part time","per diem","aca",
+        "dog insurance","cat insurance","animal insurance","pet coverage","veterinary","vet bills","pet benefits","aspca insurance"]
+    },
+
+    {
+      title: "Unitek Thrive Wellness",
+      category: "My Wellbeing",
+      sectionKey: "wellbeing",
+      benefitKey: "thrive",
+      description: "Physical and mental wellbeing platform with challenges, resources, and activities.",
+      url: "wellbeing.html",
+      keywords: ["wellness","wellbeing","well-being","physical health","mental health","healthy habits","challenges","resources","full time","part time","per diem","aca",
+        "wellness program","wellbeing program","health challenges","wellness challenges","physical wellness","mental wellness","healthy lifestyle","wellness goals","fitness","resources and activities"]
+    },
+    {
+      title: "Calm Health App",
+      category: "My Wellbeing",
+      sectionKey: "wellbeing",
+      benefitKey: "calm",
+      description: "Mental health support for mental, emotional, and physical wellbeing.",
+      url: "wellbeing.html",
+      keywords: ["calm","mental health","emotional health","wellbeing","well-being","stress","support","app","full time","aca",
+        "anxiety","stress","meditation","mindfulness","mental wellbeing","emotional wellbeing","mental wellness","mental health app","calm app","support for stress"]
+    },
+
+    {
+      title: "Educational Pathways",
+      category: "My Advancement",
+      sectionKey: "advancement",
+      benefitKey: "pathways",
+      description: "Structured pathways to pursue higher degrees and expand your expertise.",
+      url: "advancement.html",
+      keywords: ["education","degree","degrees","higher education","school","college","career growth","professional growth","pathways","full time",
+        "go back to school","earn a degree","higher degree","continue education","career advancement","professional development","education benefit","college degree","school while working"]
+    },
+    {
+      title: "Tuition Assistance Program",
+      category: "My Advancement",
+      sectionKey: "advancement",
+      benefitKey: "tuition",
+      description: "Tuition reimbursement support for eligible employees and family members.",
+      url: "advancement.html",
+      keywords: ["tuition","education","school","college","degree","reimbursement","family","eligible family members","full time","career growth",
+        "tuition reimbursement","pay for school","education reimbursement","college tuition","school assistance","family tuition","family education","eligible family members","education benefit"]
+    },
+
+    {
+      title: "TELUS Employee Assistance Program",
+      category: "My Support",
+      sectionKey: "support",
+      benefitKey: "eap",
+      description: "Support for emotional wellbeing and everyday life events.",
+      url: "support.html",
+      keywords: ["eap","employee assistance","telus","mental health","counseling","legal consultation","financial consultation","child care","elder care","life coaching","support","full time","part time","per diem","aca",
+        "eap help","employee help","counseling","online counseling","therapy","life coaching","legal help","legal advice","financial help","financial counseling","childcare support","eldercare support","community referrals","cbt","emotional support","everyday life support"]
+    },
+    {
+      title: "Critical Incident Community Crisis Line",
+      category: "My Support",
+      sectionKey: "support",
+      benefitKey: "crisis",
+      description: "Immediate coordinated assistance following disruptive or critical incidents.",
+      url: "support.html",
+      keywords: ["crisis","critical incident","emergency","natural disaster","workplace accident","loss","violence","stability","support","full time","part time","per diem","aca",
+        "crisis help","critical incident support","emergency support","workplace crisis","disaster support","sudden loss","violence","workplace accident","team crisis","return to stability"]
+    },
+    {
+      title: "Empathy Support",
+      category: "My Support",
+      sectionKey: "support",
+      benefitKey: "empathy",
+      description: "Bereavement support, funeral planning, and will preparation services.",
+      url: "support.html",
+      keywords: ["bereavement","loss","grief","funeral","will","will preparation","empathy","support","family","loved ones","full time","part time","per diem","aca",
+        "grief support","bereavement","death in family","funeral planning","will preparation","loss of loved one","support after loss","end of life planning"]
+    },
+    {
+      title: "Voya Cares",
+      category: "My Support",
+      sectionKey: "support",
+      benefitKey: "voya",
+      description: "Resources for planning around the needs of loved ones with special needs.",
+      url: "support.html",
+      keywords: ["special needs","voya","government benefits","beneficiary planning","family","loved ones","planning","support","full time","part time","per diem","aca",
+        "special needs planning","special needs family","government benefits","beneficiary planning","disability planning","caregiver planning","loved one with special needs"]
+    },
+    {
+      title: "Medicare Consulting Services",
+      category: "My Support",
+      sectionKey: "support",
+      benefitKey: "medicare",
+      description: "Consulting support for employees or spouses navigating Medicare eligibility.",
+      url: "support.html",
+      keywords: ["medicare","consulting","retirement","spouse","eligible","healthcare","transition","full time","part time","per diem","aca",
+        "medicare help","medicare advice","medicare transition","medicare eligible","spouse medicare","health insurance after 65","turning 65","retirement healthcare"]
+    },
+    {
+      title: "Travel Assistance Program",
+      category: "My Support",
+      sectionKey: "support",
+      benefitKey: "travel",
+      description: "Travel, medical transport, medical assistance, and security support when traveling 100 miles or more from home.",
+      url: "support.html",
+      keywords: ["travel","vacation","trip","100 miles","medical transport","emergency travel","security","travel assistance","family","full time","part time","per diem","aca",
+        "travel emergency","vacation emergency","emergency medical transport","medical help while traveling","security while traveling","travel security","far from home","trip emergency","family travel support"]
+    }
+  ];
+
+  const benefitsSearchInput = document.getElementById("benefitsSearch");
+  const benefitsSearchClear = document.getElementById("benefitsSearchClear");
+  const benefitsSearchResults = document.getElementById("benefitsSearchResults");
+
+  function normalizeSearchText(value) {
+    return value
+      .toLowerCase()
+      .replace(/part[- ]time/g, "part time")
+      .replace(/full[- ]time/g, "full time")
+      .replace(/well[- ]being/g, "wellbeing")
+      .replace(/401\s*\(?k\)?/g, "401k")
+      .replace(/ad\s*&\s*d/g, "ad&d")
+      .replace(/[^\w\s&()-]/g, " ")
+      .replace(/\s+/g, " ")
+      .trim();
+  }
+
+  function searchBenefits(query) {
+    const normalizedQuery = normalizeSearchText(query);
+
+    if (!normalizedQuery) {
+      benefitsSearchResults.classList.remove("visible");
+      benefitsSearchResults.innerHTML = "";
+      benefitsSearchClear.style.display = "none";
+      return;
+    }
+
+    benefitsSearchClear.style.display = "block";
+
+    const terms = normalizedQuery.split(" ").filter(Boolean);
+
+    const matches = benefitsSearchData.filter(item => {
+      const haystack = normalizeSearchText([
+        item.title,
+        item.category,
+        item.description,
+        ...(item.keywords || [])
+      ].join(" "));
+
+      return terms.every(term => haystack.includes(term));
+    });
+
+    benefitsSearchResults.classList.add("visible");
+
+    if (!matches.length) {
+      benefitsSearchResults.innerHTML = `
+        <div class="search-empty">
+          <strong>No matching benefits found</strong>
+          <p>
+            Try a different keyword, such as travel, part time, wellness,
+            tuition, or retirement. You can also browse the categories below
+            to explore all available benefits.
+          </p>
+        </div>
+      `;
+      return;
+    }
+
+    benefitsSearchResults.innerHTML = `
+      <p class="search-results-count">
+        ${matches.length} matching ${matches.length === 1 ? "benefit" : "benefits"}
+      </p>
+
+      <div class="search-results-grid">
+        ${matches.map(item => `
+          <a
+            class="search-result-card"
+            href="${(item.coreKey || item.sectionKey) ? "#" : item.url}"
+            ${item.coreKey ? `data-core-benefit="${item.coreKey}"` : ""}
+            ${item.sectionKey ? `data-section-benefit="${item.sectionKey}:${item.benefitKey}"` : ""}>
+            <div class="search-result-category">${item.category}</div>
+            <div class="search-result-title">${item.title}</div>
+            <div class="search-result-description">${item.description}</div>
+            <div class="search-result-link">View Benefit →</div>
+          </a>
+        `).join("")}
+      </div>
+    `;
+
+    benefitsSearchResults
+      .querySelectorAll("[data-core-benefit]")
+      .forEach(card => {
+        card.addEventListener("click", event => {
+          event.preventDefault();
+          openEmbeddedCoreBenefit(card.dataset.coreBenefit);
+        });
+      });
+
+    benefitsSearchResults
+      .querySelectorAll("[data-section-benefit]")
+      .forEach(card => {
+        card.addEventListener("click", event => {
+          event.preventDefault();
+          const [sectionKey, benefitKey] = card.dataset.sectionBenefit.split(":");
+          openCategory(sectionKey);
+          showEmbeddedSectionDetail(sectionKey, benefitKey);
+        });
+      });
+  }
+
+  benefitsSearchInput.addEventListener("input", event => {
+    searchBenefits(event.target.value);
+  });
+
+  benefitsSearchClear.addEventListener("click", () => {
+    benefitsSearchInput.value = "";
+    benefitsSearchInput.focus();
+    searchBenefits("");
+  });
+
+</script>
+
+<script>
+(async function () {
+  try {
+    const response = await fetch('benefits-data.json', { cache: 'no-store' });
+    if (!response.ok) {
+      throw new Error('Unable to load benefits-data.json (' + response.status + ')');
+    }
+
+    const allBenefits = await response.json();
+    const benefitsArray = Array.isArray(allBenefits)
+      ? allBenefits
+      : (Array.isArray(allBenefits.benefits) ? allBenefits.benefits : []);
+
+    window.__benefitsData = benefitsArray;
+    window.__wellbeingBenefits = benefitsArray
+      .filter(item => item.category === 'wellbeing' && item.active !== false)
+      .sort((a, b) => (a.sortOrder ?? 999) - (b.sortOrder ?? 999));
+  } catch (error) {
+    console.error('Benefits data loader:', error);
+  }
+})();
+</script>
+
+</body>
+</html>
