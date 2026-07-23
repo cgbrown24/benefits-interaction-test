@@ -2662,8 +2662,9 @@
   try {
     const response = await fetch('benefits-data.json', { cache: 'no-store' });
     if (!response.ok) throw new Error('Unable to load benefits-data.json (' + response.status + ')');
-    const allBenefits = await response.json();
 
+    const payload = await response.json();
+    const allBenefits = Array.isArray(payload) ? payload : (Array.isArray(payload.benefits) ? payload.benefits : []);
     const wellbeingBenefits = allBenefits
       .filter(item => item.category === 'wellbeing' && item.active !== false)
       .sort((a, b) => (a.sortOrder ?? 999) - (b.sortOrder ?? 999));
@@ -2671,129 +2672,88 @@
     window.__benefitsData = allBenefits;
     window.__wellbeingBenefits = wellbeingBenefits;
 
+    function normalizeList(value, separator) {
+      if (Array.isArray(value)) return value.map(v => String(v).trim()).filter(Boolean);
+      return String(value || '')
+        .split(separator)
+        .map(v => v.trim())
+        .filter(Boolean);
+    }
+
+    function eligibilityMarkup(value) {
+      return normalizeList(value, '|').join('<span class="eligibility-divider">|</span>');
+    }
+
     const wellbeingPanel = document.getElementById('wellbeingPanel');
-    if (!wellbeingPanel) return;
+    const wellbeingMenu = wellbeingPanel?.querySelector('.category-benefit-menu');
 
-    const home = wellbeingPanel.querySelector('.category-home');
-    if (!home) return;
+    // Update the data object used by the interaction's ORIGINAL click handlers.
+    // This preserves all existing navigation and button behavior.
+    wellbeingBenefits.forEach((benefit) => {
+      const existing = wellbeingEmbeddedBenefitContent[benefit.id] || {};
+      wellbeingEmbeddedBenefitContent[benefit.id] = {
+        ...existing,
+        story: benefit.headline || existing.story || benefit.name || '',
+        name: benefit.name || existing.name || '',
+        description: benefit.description || '',
+        eligibility: eligibilityMarkup(benefit.eligibility),
+        link: benefit.learnMoreUrl || '',
+        accessLink: benefit.howToAccessUrl || ''
+      };
 
-    const listContainer =
-      home.querySelector('.category-benefit-list') ||
-      home.querySelector('.benefit-options') ||
-      home.querySelector('.category-options');
+      if (wellbeingMenu) {
+        let button = wellbeingMenu.querySelector('.embedded-section-benefit[data-section="wellbeing"][data-benefit="' + benefit.id + '"]');
 
-    if (listContainer) {
-      listContainer.innerHTML = '';
-      wellbeingBenefits.forEach((benefit) => {
-        const button = document.createElement('button');
-        button.className = 'category-benefit embedded-section-benefit';
-        button.type = 'button';
-        button.dataset.section = 'wellbeing';
-        button.dataset.benefit = benefit.id;
-        button.innerHTML =
-          '<span class="option-icon"><span aria-hidden="true">›</span></span>' +
-          '<span>' + benefit.name + '</span>';
-        listContainer.appendChild(button);
-      });
-    }
-
-    function eligibilityHtml(value) {
-      const items = Array.isArray(value)
-        ? value
-        : String(value || '').split('|').map(v => v.trim()).filter(Boolean);
-      return items.join('<span class="eligibility-divider">|</span>');
-    }
-
-    function renderWellbeingDetail(benefit) {
-      const detail = document.getElementById('wellbeingEmbeddedDetail');
-      const card = document.getElementById('wellbeingEmbeddedDetailCard');
-      if (!detail || !card || !benefit) return;
-
-      const links = [];
-      if (benefit.learnMoreUrl) {
-        links.push('<a class="learn-more" href="' + benefit.learnMoreUrl + '" target="_blank" rel="noopener noreferrer">Learn More →</a>');
-      }
-      if (benefit.howToAccessUrl) {
-        links.push('<a class="access-button" href="' + benefit.howToAccessUrl + '" target="_blank" rel="noopener noreferrer">How to Access →</a>');
-      }
-
-      card.innerHTML =
-        '<h3>' + (benefit.headline || benefit.name) + '</h3>' +
-        '<p>' + (benefit.description || '') + '</p>' +
-        '<div class="eligibility-label">Eligibility</div>' +
-        '<div class="eligibility-list">' + eligibilityHtml(benefit.eligibility) + '</div>' +
-        (links.length ? '<div class="button-row">' + links.join('') + '</div>' : '');
-
-      home.style.display = 'none';
-      detail.classList.add('visible');
-      detail.style.display = 'block';
-    }
-
-    wellbeingPanel.addEventListener('click', function (event) {
-      const button = event.target.closest('.embedded-section-benefit[data-section="wellbeing"]');
-      if (!button) return;
-      event.preventDefault();
-      event.stopPropagation();
-      const benefit = wellbeingBenefits.find(item => item.id === button.dataset.benefit);
-      renderWellbeingDetail(benefit);
-    }, true);
-
-    const backButton = wellbeingPanel.querySelector('[data-back-section="wellbeing"]');
-    if (backButton) {
-      backButton.addEventListener('click', function () {
-        const detail = document.getElementById('wellbeingEmbeddedDetail');
-        if (detail) {
-          detail.classList.remove('visible');
-          detail.style.display = 'none';
-        }
-        home.style.display = '';
-      });
-    }
-
-    const searchInput = document.getElementById('benefitsSearch');
-    const searchResults = document.getElementById('benefitsSearchResults');
-
-    if (searchInput && searchResults) {
-      searchInput.addEventListener('input', function (event) {
-        const q = event.target.value.trim().toLowerCase();
-        if (!q) {
-          searchResults.innerHTML = '';
-          searchResults.style.display = 'none';
-          return;
-        }
-
-        const matches = wellbeingBenefits.filter((benefit) => {
-          const haystack = [
-            benefit.name,
-            benefit.headline,
-            benefit.description,
-            ...(Array.isArray(benefit.eligibility) ? benefit.eligibility : [benefit.eligibility || '']),
-            ...(benefit.keywords || [])
-          ].join(' ').toLowerCase();
-          return haystack.includes(q);
-        });
-
-        searchResults.innerHTML = '';
-        if (!matches.length) {
-          searchResults.innerHTML = '<div class="benefits-search-empty">No matching Wellbeing benefits found.</div>';
-          searchResults.style.display = 'block';
-          return;
-        }
-
-        matches.forEach((benefit) => {
-          const item = document.createElement('button');
-          item.type = 'button';
-          item.className = 'benefits-search-result';
-          item.innerHTML = '<strong>' + benefit.name + '</strong><span>My Wellbeing</span>';
-          item.addEventListener('click', function () {
-            const hotspot = document.querySelector('[data-target="wellbeing"]');
-            if (hotspot) hotspot.dispatchEvent(new MouseEvent('click', { bubbles: true }));
-            setTimeout(function () { renderWellbeingDetail(benefit); }, 0);
+        if (!button) {
+          button = document.createElement('button');
+          button.className = 'category-benefit embedded-section-benefit';
+          button.type = 'button';
+          button.dataset.section = 'wellbeing';
+          button.dataset.benefit = benefit.id;
+          button.innerHTML = '<span class="option-icon"><span aria-hidden="true">›</span></span><span></span>';
+          button.addEventListener('click', function () {
+            resetEmbeddedSection('wellbeing');
+            showEmbeddedSectionDetail('wellbeing', benefit.id);
           });
-          searchResults.appendChild(item);
+          wellbeingMenu.appendChild(button);
+        }
+
+        const label = button.querySelector('span:last-child');
+        if (label) label.textContent = benefit.name || benefit.id;
+      }
+
+      // Keep the existing global search data in sync without adding a second search listener.
+      const searchRecord = benefitsSearchData.find(item =>
+        item.sectionKey === 'wellbeing' && item.benefitKey === benefit.id
+      );
+      const keywords = normalizeList(benefit.keywords, ',');
+
+      if (searchRecord) {
+        searchRecord.title = benefit.name || searchRecord.title;
+        searchRecord.description = benefit.description || '';
+        searchRecord.keywords = keywords;
+      } else {
+        benefitsSearchData.push({
+          title: benefit.name || benefit.id,
+          category: 'My Wellbeing',
+          sectionKey: 'wellbeing',
+          benefitKey: benefit.id,
+          description: benefit.description || '',
+          url: 'wellbeing.html',
+          keywords
         });
-        searchResults.style.display = 'block';
-      }, true);
+      }
+    });
+
+    // Hide Wellbeing buttons whose records are explicitly inactive in the JSON.
+    if (wellbeingMenu) {
+      const activeIds = new Set(wellbeingBenefits.map(item => item.id));
+      allBenefits
+        .filter(item => item.category === 'wellbeing' && item.active === false)
+        .forEach((benefit) => {
+          const button = wellbeingMenu.querySelector('.embedded-section-benefit[data-section="wellbeing"][data-benefit="' + benefit.id + '"]');
+          if (button && !activeIds.has(benefit.id)) button.style.display = 'none';
+        });
     }
   } catch (error) {
     console.error('Benefits data load failed:', error);
