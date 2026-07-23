@@ -1,13 +1,13 @@
 [
   {
-    "active": true,
+    "active": false,
     "category": "Wellbeing",
-    "description": "Access easy-to-use mental health support designed to meet you where you are and guide you toward greater mental, emotional, and physical wellbeing. TEST",
-    "eligibility": "Regular Full-Time ",
-    "headline": "Find Support That Meets You Where You Are",
+    "description": "A physical and mental wellbeing platform with challenges, resources, and activities designed to help you work toward your wellness goals.",
+    "eligibility": "Regular Full-Time | Regular Part-Time | Per Diem/Assignment | Affordable Care Act Medical Eligible",
+    "headline": "Take an Active Role in Your Wellbeing",
     "howToAccessUrl": null,
     "id": "thrive",
-    "keywords": "calm, mental health, stress, mindfulness, wellbeing, wellness",
+    "keywords": "wellbeing, wellness, health, mental health, physical health",
     "learnMoreUrl": "https://stacks.cdc.gov/view/cdc/107530/cdc_107530_DS1.pdf",
     "name": "Unitek Thrive Wellness",
     "sortOrder": 1
@@ -15,12 +15,12 @@
   {
     "active": true,
     "category": "Wellbeing",
-    "description": "Access easy-to-use mental health support designed to meet you where you are and guide you toward greater mental, emotional, and physical wellbeing. TEST",
-    "eligibility": "Regular Full-Time ",
-    "headline": "Find Support That Meets You Where You Are",
+    "description": "A physical and mental wellbeing platform with challenges, resources, and activities designed to help you work toward your wellness goals.",
+    "eligibility": "Regular Full-Time | Regular Part-Time | Per Diem/Assignment | Affordable Care Act Medical Eligible",
+    "headline": "Take an Active Role in Your Wellbeing",
     "howToAccessUrl": null,
     "id": "calm",
-    "keywords": "calm, mental health, stress, mindfulness, wellbeing, wellness",
+    "keywords": "wellbeing, wellness, health, mental health, physical health",
     "learnMoreUrl": "https://stacks.cdc.gov/view/cdc/107530/cdc_107530_DS1.pdf",
     "name": "Calm Health App",
     "sortOrder": 2
