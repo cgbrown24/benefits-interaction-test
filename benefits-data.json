@@ -1,6 +1,6 @@
 [
   {
-    "active": false,
+    "active": true,
     "category": "Wellbeing",
     "description": "A physical and mental wellbeing platform with challenges, resources, and activities designed to help you work toward your wellness goals.",
     "eligibility": "Regular Full-Time | Regular Part-Time | Per Diem/Assignment | Affordable Care Act Medical Eligible",
@@ -21,7 +21,7 @@
     "howToAccessUrl": null,
     "id": "calm",
     "keywords": "calm, mental health, stress, mindfulness, wellbeing, wellness",
-    "learnMoreUrl": "https://stacks.cdc.gov/view/cdc/107530/cdc_107530_DS1.pdf",
+    "learnMoreUrl": "https://www.cdc.gov/nutrition/media/pdfs/2026/03/Healthy-Eating-Benefits-Adult-April2021-508.pdf",
     "name": "Calm Health App",
     "sortOrder": 2
   }
