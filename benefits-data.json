@@ -1,0 +1,49 @@
+[
+  {
+    "id": "thrive",
+    "category": "wellbeing",
+    "name": "Unitek Thrive Wellness",
+    "headline": "Take an Active Role in Your Wellbeing",
+    "description": "A physical and mental wellbeing platform with challenges, resources, and activities designed to help you work toward your wellness goals.",
+    "eligibility": [
+      "Regular Full-Time",
+      "Regular Part-Time",
+      "Per Diem / Assignment",
+      "Affordable Care Act Medical Eligible"
+    ],
+    "learnMoreUrl": "https://stacks.cdc.gov/view/cdc/107530/cdc_107530_DS1.pdf",
+    "howToAccessUrl": "",
+    "keywords": [
+      "wellbeing",
+      "wellness",
+      "health",
+      "mental health",
+      "physical health"
+    ],
+    "active": true,
+    "sortOrder": 1
+  },
+  {
+    "id": "calm",
+    "category": "wellbeing",
+    "name": "Calm Health App",
+    "headline": "Find Support That Meets You Where You Are",
+    "description": "Access easy-to-use mental health support designed to meet you where you are and guide you toward greater mental, emotional, and physical wellbeing.",
+    "eligibility": [
+      "Regular Full-Time",
+      "Affordable Care Act Medical Eligible"
+    ],
+    "learnMoreUrl": "https://stacks.cdc.gov/view/cdc/107530/cdc_107530_DS1.pdf",
+    "howToAccessUrl": "",
+    "keywords": [
+      "calm",
+      "mental health",
+      "stress",
+      "mindfulness",
+      "wellbeing",
+      "wellness"
+    ],
+    "active": true,
+    "sortOrder": 2
+  }
+]
